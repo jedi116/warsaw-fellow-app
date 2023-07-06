@@ -40,12 +40,6 @@ export default function Form({
             await CommonService.saveAttendance({date, users: usersAttended})
         }
     }
-    useEffect(() => {
-        if (formData) {
-            console.log(formData)
-        _form.setValues(formatForForm(formData.users))
-        }
-    },[formData])
     return (
     <div style={{padding:'10px', margin: '10px'}}>
         <form onSubmit={_form.onSubmit(values => handleSubmit(values))}>

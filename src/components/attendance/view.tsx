@@ -29,13 +29,14 @@ export default function View () {
                     />   
                 </Flex>
                 {attendance ? 
-                attendance.users.map(user => {
+                attendance.users.map((user,index) => {
                     return (
                         <Flex
                             gap="md"
                             justify="space-between"
                             align="flex-start"
                             direction="row"
+                            key={index}
                         >
                             <span>{user.firstName} {user.lastName}</span>
                             <span>{user.present ? 'Present' : 'Absent'}</span>

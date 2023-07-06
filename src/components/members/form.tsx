@@ -35,25 +35,7 @@ type FormData = {
 export default function MemberForm () {
     const [user, loading, error] = useAuthState(auth)
     const {closeModal, selectedMember, modalType} = useContext(MemberContext)
-    useEffect(() => {
-        if (selectedMember) {
-            _form.setValues({
-                email: selectedMember.email,
-                role: selectedMember.role,
-                firstName: selectedMember.firstName,
-                lastName: selectedMember.lastName,
-                phonenumber: selectedMember.phonenumber,
-                birthday: new Date(selectedMember?.birthday),
-                worship: selectedMember.team.includes('worship'),
-                prayer: selectedMember.team.includes('prayer'),
-                literature: selectedMember.team.includes('literature'),
-                evangelism: selectedMember.team.includes('evangelism'),
-                holisticteam: selectedMember.team.includes('holisticteam'),
-                eventOrganization: selectedMember.team.includes('eventOrganization'),
-                telegram: selectedMember.telegram
-            })
-        }
-    }, [selectedMember])
+    
     const _form = useForm({
         initialValues: {
           email: '',
@@ -109,6 +91,25 @@ export default function MemberForm () {
         }
         closeModal && closeModal()
     }
+    useEffect(() => {
+        if (selectedMember) {
+            _form.setValues({
+                email: selectedMember.email,
+                role: selectedMember.role,
+                firstName: selectedMember.firstName,
+                lastName: selectedMember.lastName,
+                phonenumber: selectedMember.phonenumber,
+                birthday: new Date(selectedMember?.birthday),
+                worship: selectedMember.team.includes('worship'),
+                prayer: selectedMember.team.includes('prayer'),
+                literature: selectedMember.team.includes('literature'),
+                evangelism: selectedMember.team.includes('evangelism'),
+                holisticteam: selectedMember.team.includes('holisticteam'),
+                eventOrganization: selectedMember.team.includes('eventOrganization'),
+                telegram: selectedMember.telegram
+            })
+        }
+    }, [selectedMember, _form])
     return (
         <div>
             <form onSubmit={_form.onSubmit(values => handleSubmit(values))}>

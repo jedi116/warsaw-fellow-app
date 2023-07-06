@@ -24,7 +24,7 @@ export const useCodes = (originalCodes: CodesType) => {
   const [user, loading, error] = useAuthState(auth)
   useEffect(() => {
     setCodes(originalCodes)
-  }, [])
+  }, [originalCodes])
   const getCodes = async () => {
     try {
       const adminCodes = await CommonService.getAdminCodes(user)
