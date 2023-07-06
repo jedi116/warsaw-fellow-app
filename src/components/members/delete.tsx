@@ -6,11 +6,14 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/service/UI/firebaseUiClient"
 export default function Delete () {
 
-    const {closeModal, selectedMember} = useContext(MemberContext)
+    const {closeModal, selectedMember, refreshUsers} = useContext(MemberContext)
     const [user, loading, error] = useAuthState(auth)
     const onDelete = async () => {
         await UserService.deleteUser(selectedMember?.uid || '', user)
         closeModal()
+        setTimeout(() => {
+            refreshUsers &&refreshUsers()
+        },200)
     }
     return (
         <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>

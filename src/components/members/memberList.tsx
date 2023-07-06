@@ -12,8 +12,6 @@ import {
   } from '@mantine/core';
   import { IconPencil, IconTrash } from '@tabler/icons-react';
 import { useContext, useEffect, useState } from 'react';
-import UserService from '@/service/UI/user-ui';
-import ProfileService from '@/service/UI/profile';
 import { User, UserWithPic } from '@/interface/user';
 import profilePlacholder from '../../../public/profile_placeholder.jpeg'
 import { MemberContext } from '@/context/MemberContext';
@@ -26,31 +24,16 @@ import { useProfile } from '@/hooks/profile';
   
   
   export default function UsersList({ data }: UsersTableProps) {
-    const [users, setUsers] = useState<UserWithPic[] | undefined>()
-    const {openModal, closeModal, setSelectedMember, modalType, setModalType} = useContext(MemberContext)
+    const { openModal, closeModal, 
+      setSelectedMember, modalType, 
+      setModalType, users, formatUsers, refreshUsers: refresh
+    } = useContext(MemberContext)
     const {profile} = useProfile()
     useEffect(() => {
       if (data) {
         formatUsers(data)
       }
     },[data])
-    const formatUsers = async (data: User[]) => {
-      const formattedUserData =  data.map(async (user) => {
-        const pic = await ProfileService.getProfilePicture(user.uid)
-        return {
-          ...user,
-          profilePicture: pic || undefined
-        }
-      })
-      const usersData = await Promise.all(formattedUserData)
-      setUsers(usersData)
-    }
-    const refresh = async () =>  {
-        const usersData = await UserService.getUsers()
-        if (usersData) {
-          formatUsers(usersData)
-        }
-    }
     const theme = useMantineTheme();
     const rows = users?.map((item) => (
       <tr key={item.uid}>

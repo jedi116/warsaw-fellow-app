@@ -34,7 +34,7 @@ type FormData = {
 
 export default function MemberForm () {
     const [user, loading, error] = useAuthState(auth)
-    const {closeModal, selectedMember, modalType} = useContext(MemberContext)
+    const {closeModal, selectedMember, modalType, refreshUsers} = useContext(MemberContext)
     
     const _form = useForm({
         initialValues: {
@@ -90,6 +90,9 @@ export default function MemberForm () {
             }, user)
         }
         closeModal && closeModal()
+        setTimeout(() => {
+            refreshUsers()
+        },200)
     }
     useEffect(() => {
         if (selectedMember) {
@@ -109,7 +112,7 @@ export default function MemberForm () {
                 telegram: selectedMember.telegram
             })
         }
-    }, [selectedMember, _form])
+    }, [selectedMember])
     return (
         <div>
             <form onSubmit={_form.onSubmit(values => handleSubmit(values))}>
