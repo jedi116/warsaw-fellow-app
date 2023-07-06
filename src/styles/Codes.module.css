@@ -1,0 +1,9 @@
+.mainContianer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.childContainer {
+    background-color: aqua;
+}
