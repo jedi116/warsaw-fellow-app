@@ -7,8 +7,8 @@ import dayjs from "dayjs";
 import { useProfile } from "@/hooks/profile";
 
 export default function Add () {
-    const [date, setDate] = useState<string>(dayjs().format("MM-DD-YYYY"))
-    const {newAttendance} = useAttendance(date)
+    const [date, setDate] = useState<Date>(new Date())
+    const {newAttendance} = useAttendance(dayjs(date).format("MM-DD-YYYY"))
     const {profile} = useProfile()
     return (
         <Center>
@@ -16,14 +16,14 @@ export default function Add () {
                 <DateInput
                         value={dayjs(date).toDate()}
                         onChange={(val) => {
-                            setDate(dayjs(val).format("MM-DD-YYYY"))
+                            val && setDate(new Date(val.toDateString()))
                         }}
                         label="Attendance For"
                         placeholder="Date input"
                         maw={400}
                         mx="auto"
                     />
-                    <Form disableEdit={profile?.role !== 'admin'} formData={newAttendance} date={date}/>
+                    <Form disableEdit={profile?.role !== 'admin'} formData={newAttendance} date={dayjs(date).format("MM-DD-YYYY")}/>
             </Stack>
         </Center>
     )

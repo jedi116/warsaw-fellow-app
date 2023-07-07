@@ -5,27 +5,27 @@ import { useAttendance } from "@/hooks";
 import dayjs from "dayjs";
 
 export default function View () {
-    const [date, setDate] = useState<string>(dayjs().format("MM-DD-YYYY"))
-    const {attendance, reloadAttendance} = useAttendance(date)
+    const [date, setDate] = useState<Date>(new Date())
+    const {attendance, reloadAttendance} = useAttendance(dayjs(date).format("MM-DD-YYYY"))
     return (
     <Center>
         <Stack w='100%'>
                 <Flex
                     gap="md"
-                    justify="flex-start"
+                    justify="center"
                     align="flex-start"
                     direction="row"
                 >
-                    <DateInput
-                        value={dayjs(date).toDate()}
-                        onChange={(val) => {
-                            setDate(dayjs(val).format("MM-DD-YYYY"))
-                        }}
-                        label="Attendance For"
-                        placeholder="Date input"
-                        maw={400}
-                        mx="auto"
-                    />   
+                        <DateInput
+                            value={date}
+                            onChange={(val) => {
+                                val && setDate(new Date(val.toDateString()))
+                            }}
+                            label="Attendance For"
+                            placeholder="Date input"
+                        />
+                        <Button style={{marginTop:'25px'}} onClick={reloadAttendance}>reload</Button>
+                    
                 </Flex>
                 {attendance ? 
                 attendance.users?.map((user,index) => {
