@@ -14,7 +14,7 @@ export default function Add () {
         <Center>
             <Stack w='100%'>
                 <DateInput
-                        value={new Date(date)}
+                        value={dayjs(date).toDate()}
                         onChange={(val) => {
                             setDate(dayjs(val).format("MM-DD-YYYY"))
                         }}
