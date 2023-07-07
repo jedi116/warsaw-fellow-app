@@ -14,8 +14,7 @@ import { useContext } from 'react';
 import { AppComponentsContext } from '@/context/AppComponentsContext';
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from "@/service/UI/firebaseUiClient"
-import { useRouter } from 'next/router';
-import ThemeToggle from './themeToggle'
+import { useRouter } from 'next/router'
   const useStyles = createStyles((theme) => ({
     hiddenMobile: {
       [theme.fn.smallerThan('sm')]: {
@@ -59,7 +58,6 @@ import ThemeToggle from './themeToggle'
               </MediaQuery>
               <Text>Warsaw FellowShip</Text><Text fz={10}>beta</Text>
             </Group>
-            <ThemeToggle />
             {
               !user && 
               <Group className={classes.hiddenMobile}>

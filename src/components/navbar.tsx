@@ -71,7 +71,7 @@ const navItemList = [
 export function _Navbar() {
   const [active, setActive] = useState(2);
   const router = useRouter()
-  const {isNavbarOpen} = useContext(AppComponentsContext)
+  const {isNavbarOpen, setNavbarState} = useContext(AppComponentsContext)
   const [user, loading, error] = useAuthState(auth)
 
   const links = navItemList.map((link, index) => (
@@ -82,6 +82,7 @@ export function _Navbar() {
       onClick={() => {
         setActive(index)
         router.push(`${link.href}`)
+        setNavbarState && setTimeout(() => setNavbarState(false), 300)
       }}
     />
   ));

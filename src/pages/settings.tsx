@@ -1,10 +1,14 @@
 import { Center, Button, Flex } from "@mantine/core"
 import { useProfile } from "@/hooks/profile"
+import ThemeToggle from "@/components/themeToggle"
 export default function Settings () {
     const {profile} = useProfile()
     return (
         <Center>
             <Flex direction='column' gap='xl'>
+                <div>
+                   Change Theme:  <ThemeToggle />
+                </div>
                 <div>
                     Want to delete account and personal data ?
                     <Button style={{marginLeft:'10px'}} color="red">
