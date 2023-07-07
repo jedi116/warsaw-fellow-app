@@ -4,10 +4,14 @@ import { Center, Stack } from "@mantine/core";
 import Form from "./form";
 import { useAttendance } from "@/hooks";
 import dayjs from "dayjs";
+import { useProfile } from "@/hooks/profile";
+import { useLoginRedirect } from "@/hooks/user";
 
 export default function Add () {
+    useLoginRedirect()
     const [date, setDate] = useState<string>(dayjs().format("MM-DD-YYYY"))
     const {newAttendance} = useAttendance(date)
+    const {profile} = useProfile()
     return (
         <Center>
             <Stack w='100%'>
@@ -21,7 +25,7 @@ export default function Add () {
                         maw={400}
                         mx="auto"
                     />
-                    <Form disableEdit={false} formData={newAttendance} date={date}/>
+                    <Form disableEdit={profile?.role !== 'admin'} formData={newAttendance} date={date}/>
             </Stack>
         </Center>
     )
