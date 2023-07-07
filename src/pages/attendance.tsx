@@ -2,8 +2,10 @@ import React from "react";
 import { Center, Text, Tabs, Stack } from "@mantine/core";
 import AttendanceView from '../components/attendance/view';
 import AttendanceAdd from '../components/attendance/add';
+import { useLoginRedirect } from "@/hooks/user";
 
 export default function attendance () {
+    useLoginRedirect()
     return (
     <Center>
         <Stack w='85%'>

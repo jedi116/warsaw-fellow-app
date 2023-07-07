@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { Center, Stack, Button, Flex } from "@mantine/core";
 import { DateInput } from '@mantine/dates';
-import Form from "./form";
 import { useAttendance } from "@/hooks";
 import dayjs from "dayjs";
 
@@ -29,7 +28,7 @@ export default function View () {
                     />   
                 </Flex>
                 {attendance ? 
-                attendance.users.map((user,index) => {
+                attendance.users?.map((user,index) => {
                     return (
                         <Flex
                             gap="md"

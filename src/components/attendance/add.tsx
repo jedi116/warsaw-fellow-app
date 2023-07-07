@@ -5,10 +5,8 @@ import Form from "./form";
 import { useAttendance } from "@/hooks";
 import dayjs from "dayjs";
 import { useProfile } from "@/hooks/profile";
-import { useLoginRedirect } from "@/hooks/user";
 
 export default function Add () {
-    useLoginRedirect()
     const [date, setDate] = useState<string>(dayjs().format("MM-DD-YYYY"))
     const {newAttendance} = useAttendance(date)
     const {profile} = useProfile()
