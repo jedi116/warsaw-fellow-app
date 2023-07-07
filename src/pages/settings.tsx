@@ -1,8 +1,10 @@
 import { Center, Button, Flex } from "@mantine/core"
 import { useProfile } from "@/hooks/profile"
 import ThemeToggle from "@/components/themeToggle"
+import { useLoginRedirect } from "@/hooks/user"
 export default function Settings () {
     const {profile} = useProfile()
+    useLoginRedirect()
     return (
         <Center>
             <Flex direction='column' gap='xl'>

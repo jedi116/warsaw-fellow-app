@@ -4,8 +4,9 @@ import AttendanceView from '../components/attendance/view';
 import AttendanceAdd from '../components/attendance/add';
 import { useLoginRedirect } from "@/hooks/user";
 
-export default function attendance () {
+export default function Attendance () {
     useLoginRedirect()
+
     return (
     <Center>
         <Stack w='85%'>
@@ -23,5 +24,6 @@ export default function attendance () {
                 </Tabs.Panel>
             </Tabs>
         </Stack>
-    </Center>)
+    </Center>
+    )
 }
