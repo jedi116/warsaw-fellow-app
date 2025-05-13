@@ -1,85 +1,86 @@
-import { createStyles, Overlay, Container, Title, Button, Text, rem } from '@mantine/core';
+'use client';
+
+import { Container, Title, Button, Text, rem, Overlay } from '@mantine/core';
 import backgroundImage from '../../public/photo1.jpeg'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from "@/service/UI/firebaseUiClient"
+import { css } from '@emotion/react';
+import { useMediaQuery } from '@mantine/hooks';
 
-const useStyles = createStyles((theme) => ({
-  hero: {
-    position: 'relative',
-    backgroundImage:
-      `url(${backgroundImage.src})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  },
+// Hero styles using Emotion CSS
+const heroStyle = css`
+  position: relative;
+  background-image: url(${backgroundImage.src});
+  background-size: cover;
+  background-position: center;
+`;
 
-  container: {
-    height: rem(700),
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    paddingBottom: `calc(${theme.spacing.xl} * 6)`,
-    zIndex: 1,
-    position: 'relative',
+const containerStyle = css`
+  height: ${rem(700)};
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-bottom: calc(var(--mantine-spacing-xl) * 6);
+  z-index: 1;
+  position: relative;
 
-    [theme.fn.smallerThan('sm')]: {
-      height: rem(500),
-      paddingBottom: `calc(${theme.spacing.xl} * 3)`,
-    },
-  },
+  @media (max-width: 48em) {
+    height: ${rem(500)};
+    padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+  }
+`;
 
-  title: {
-    color: theme.white,
-    fontSize: rem(60),
-    fontWeight: 900,
-    lineHeight: 1.1,
+const titleStyle = css`
+  color: white;
+  font-size: ${rem(60)};
+  font-weight: 900;
+  line-height: 1.1;
 
-    [theme.fn.smallerThan('sm')]: {
-      fontSize: rem(40),
-      lineHeight: 1.2,
-    },
+  @media (max-width: 48em) {
+    font-size: ${rem(40)};
+    line-height: 1.2;
+  }
 
-    [theme.fn.smallerThan('xs')]: {
-      fontSize: rem(28),
-      lineHeight: 1.3,
-    },
-  },
+  @media (max-width: 36em) {
+    font-size: ${rem(28)};
+    line-height: 1.3;
+  }
+`;
 
-  description: {
-    color: theme.white,
-    maxWidth: 600,
+const descriptionStyle = css`
+  color: white;
+  max-width: 600px;
 
-    [theme.fn.smallerThan('sm')]: {
-      maxWidth: '100%',
-      fontSize: theme.fontSizes.sm,
-    },
-  },
+  @media (max-width: 48em) {
+    max-width: 100%;
+    font-size: var(--mantine-font-size-sm);
+  }
+`;
 
-  control: {
-    marginTop: `calc(${theme.spacing.xl} * 1.5)`,
+const controlStyle = css`
+  margin-top: calc(var(--mantine-spacing-xl) * 1.5);
 
-    [theme.fn.smallerThan('sm')]: {
-      width: '100%',
-    },
-  },
-}));
+  @media (max-width: 48em) {
+    width: 100%;
+  }
+`;
 
 export function HeroContentLeft() {
   const router = useRouter()
   const [user, loading, error] = useAuthState(auth)
-  const { classes } = useStyles();
 
   return (
-    <div className={classes.hero}>
+    <div css={heroStyle}>
       <Overlay
         gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, .65) 40%)"
         opacity={1}
         zIndex={0}
       />
-      <Container className={classes.container}>
-        <Title className={classes.title}>Warsaw Ethiopian Christian Fellow Ship</Title>
-        <Text className={classes.description} size="xl" mt="xl">
+      <Container css={containerStyle}>
+        <Title css={titleStyle}>Warsaw Ethiopian Christian Fellow Ship</Title>
+        <Text css={descriptionStyle} size="xl" mt="xl">
             This is an app for registered member of the fellow ship to share and manage data 
             related to the fellow
         </Text>
@@ -88,7 +89,7 @@ export function HeroContentLeft() {
           variant="gradient" 
           size="xl" 
           radius="xl" 
-          className={classes.control} 
+          css={controlStyle} 
           onClick={()=>{
             if (user) {
               router.push('/members')

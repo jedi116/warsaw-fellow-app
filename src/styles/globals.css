@@ -1,0 +1,68 @@
+:root {
+  --max-width: 1200px;
+  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Animation classes for visibility */
+.visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 27, 30, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mantine-color-indigo-8);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mantine-color-indigo-7);
+}
+
+/* Global focus styles */
+:focus-visible {
+  outline: 2px solid var(--mantine-color-indigo-5);
+  outline-offset: 2px;
+}
+
+/* Enhanced button hover effects */
+button {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Image hover effects */
+img {
+  transition: transform 0.3s ease;
+}

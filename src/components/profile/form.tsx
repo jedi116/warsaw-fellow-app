@@ -75,95 +75,151 @@ export default function ProfileForm () {
         }
     }
     return (
-        <div style={{width:'40%'}}>
-            <Avatar src={(picture && URL.createObjectURL(picture)) || (!pictureChanged && profile?.profilePicture) || profilePlacholder.src} size={165} radius={165} mx="auto" />
-            <Center>
-                <Group style={{marginTop:'10px'}}>
-                    <Button color='green' onClick={onUpdatePictureClick}>Update Picture</Button>
-                    <Button color='red' onClick={()=> {
-                        setPicture(null)
-                        setPictureChanged(true)
+        <Center>
+            <div style={{ width: '100%', maxWidth: '600px' }}>
+                <Center mb={30}>
+                    <Avatar 
+                        src={(picture && URL.createObjectURL(picture)) || (!pictureChanged && profile?.profilePicture) || profilePlacholder.src} 
+                        size={180} 
+                        radius={180} 
+                        style={{ 
+                            border: '4px solid var(--mantine-color-indigo-6)',
+                            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
                         }}
-                    >
-                        Delete Picture
-                    </Button>
-                    <input
-                        type="file"
-                        ref={hiddenFileInput}
-                        onChange={onFileChange}
-                        style={{display: 'none'}}
                     />
-                </Group>
-            </Center>
-            <form onSubmit={_form.onSubmit(values => handleSubmit(values))}>
-                <TextInput 
-                    label="Email" 
-                    placeholder="you@mantine.dev"  
-                    {..._form.getInputProps('email')}
-                    disabled
-                />
-                <TextInput 
-                    label="Role" 
-                    placeholder="you@mantine.dev"
-                    defaultValue={profile?.role}
-                    disabled
-                />
-                <TextInput 
-                    label="First Name" 
-                    placeholder="First Name"
-                    {..._form.getInputProps('firstName')}
-                />
-                <TextInput 
-                    label="Last Name" 
-                    placeholder="Last name"
-                    {..._form.getInputProps('lastName')}
-                />
-                <TextInput
-                        label="Phone number" 
-                        placeholder="+48..."  
-                        {..._form.getInputProps('phonenumber')}
-                />
-                <DateInput
-                    label="Birthday"
-                    placeholder="Birthday"
-                    {..._form.getInputProps('birthday')}
-                />
-                <Divider my="xs" label="Team" />
-                <Checkbox  
-                  label="worship"
-                  {..._form.getInputProps('worship', { type: 'checkbox' })}
-                  />
-                <Checkbox  
-                  label="prayer" 
-                  {..._form.getInputProps('prayer', { type: 'checkbox' })}
-                  />
-                  <Checkbox  
-                  label="literature" 
-                  {..._form.getInputProps('literature', { type: 'checkbox' })}
-                  />
-                  <Checkbox  
-                  label="evangelism" 
-                  {..._form.getInputProps('evangelism', { type: 'checkbox' })}
-                  /> 
-                  <Checkbox  
-                  label="Holistic team" 
-                  {..._form.getInputProps('holisticteam', { type: 'checkbox' })}
-                  />
-                  <Checkbox  
-                  label="Event Organization"
-                  {..._form.getInputProps('eventOrganization', { type: 'checkbox' })}
-                  />
-                <Divider my="xs" label="Team" />
-                <TextInput
-                        label="Telegram" 
-                        placeholder="username or number"
-                        {..._form.getInputProps('telegram')}
-                />
-                <Button fullWidth mt="xl" type='submit'>
-                    Update
-                </Button>
-            </form>
- 
-        </div>
+                </Center>
+                
+                <Center>
+                    <Group style={{ marginTop: '10px', marginBottom: '30px' }}>
+                        <Button 
+                            variant="light"
+                            color="indigo" 
+                            onClick={onUpdatePictureClick}
+                            leftSection={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 8h.01M5 21h14a2 2 0 0 0 2-2V7l-5-5H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"></path><path d="M17.21 12a3 3 0 1 1-5.42-2.59A3 3 0 0 1 17.2 12Z"></path></svg>}
+                        >
+                            Update Picture
+                        </Button>
+                        
+                        <Button 
+                            variant="light"
+                            color="red" 
+                            onClick={() => {
+                                setPicture(null)
+                                setPictureChanged(true)
+                            }}
+                            leftSection={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>}
+                        >
+                            Remove Picture
+                        </Button>
+                        
+                        <input
+                            type="file"
+                            ref={hiddenFileInput}
+                            onChange={onFileChange}
+                            style={{ display: 'none' }}
+                        />
+                    </Group>
+                </Center>
+                
+                <form onSubmit={_form.onSubmit(values => handleSubmit(values))}>
+                    <Group grow mb="md">
+                        <TextInput
+                            label="First Name"
+                            placeholder="First Name"
+                            {..._form.getInputProps('firstName')}
+                        />
+                        
+                        <TextInput
+                            label="Last Name"
+                            placeholder="Last name"
+                            {..._form.getInputProps('lastName')}
+                        />
+                    </Group>
+                    
+                    <TextInput
+                        label="Email"
+                        placeholder="you@example.com"
+                        {..._form.getInputProps('email')}
+                        disabled
+                        mb="md"
+                    />
+                    
+                    <Group grow mb="md">
+                        <TextInput
+                            label="Role"
+                            placeholder="Member role"
+                            defaultValue={profile?.role}
+                            disabled
+                        />
+                        
+                        <TextInput
+                            label="Phone number"
+                            placeholder="+48..."
+                            {..._form.getInputProps('phonenumber')}
+                        />
+                    </Group>
+                    
+                    <Group grow mb="md">
+                        <DateInput
+                            label="Birthday"
+                            placeholder="Select date"
+                            clearable
+                            {..._form.getInputProps('birthday')}
+                        />
+                        
+                        <TextInput
+                            label="Telegram"
+                            placeholder="Username or number"
+                            {..._form.getInputProps('telegram')}
+                        />
+                    </Group>
+                    
+                    <Divider my="xl" label="Team Memberships" labelPosition="center" />
+                    
+                    <Group grow mb="xl">
+                        <Checkbox
+                            label="Worship"
+                            {..._form.getInputProps('worship', { type: 'checkbox' })}
+                        />
+                        
+                        <Checkbox
+                            label="Prayer"
+                            {..._form.getInputProps('prayer', { type: 'checkbox' })}
+                        />
+                        
+                        <Checkbox
+                            label="Literature"
+                            {..._form.getInputProps('literature', { type: 'checkbox' })}
+                        />
+                    </Group>
+                    
+                    <Group grow mb="xl">
+                        <Checkbox
+                            label="Evangelism"
+                            {..._form.getInputProps('evangelism', { type: 'checkbox' })}
+                        />
+                        
+                        <Checkbox
+                            label="Holistic Team"
+                            {..._form.getInputProps('holisticteam', { type: 'checkbox' })}
+                        />
+                        
+                        <Checkbox
+                            label="Event Organization"
+                            {..._form.getInputProps('eventOrganization', { type: 'checkbox' })}
+                        />
+                    </Group>
+                    
+                    <Button 
+                        fullWidth 
+                        mt="xl" 
+                        size="lg" 
+                        type="submit"
+                    >
+                        Update Profile
+                    </Button>
+                </form>
+            </div>
+        </Center>
     )
 }

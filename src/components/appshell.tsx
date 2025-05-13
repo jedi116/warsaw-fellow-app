@@ -1,46 +1,35 @@
-import { useContext } from 'react';
-import {
-  AppShell,
-  Header,
-  Footer,
-  Text,
-  Burger,
-  useMantineTheme,
-} from '@mantine/core';
-import { _Navbar } from './navbar';
-import { _Header } from './header';
-import { AppComponentsContext } from '@/context/AppComponentsContext';
+'use client';
+
+import React from 'react';
+import { ModernHeader } from './header';
+import { Footer } from './footer';
+import { Box, useMantineColorScheme } from '@mantine/core';
+import { css } from '@emotion/react';
 
 type AppShellProps = {
-    children: JSX.Element
+  children: React.ReactNode
 }
 
-export default function _AppShell(props: AppShellProps) {
-  const {children} = props  
-  const theme = useMantineTheme();
-  const {isNavbarOpen, setNavbarState } = useContext(AppComponentsContext)
-  const getNavbar = () => {
-    if (isNavbarOpen) {
-      return {
-        navbar: <_Navbar/>,
-        navbarOffsetBreakpoint:"sm"
-      }
-    } else {
+export default function AppShell(props: AppShellProps) {
+  const { children } = props;
+  // Use fixed dark colorScheme for now to avoid hydration issues
+  const colorScheme = 'dark';
+  
+  const mainStyles = css`
+    margin-top: 90px;
+    min-height: calc(100vh - 90px);
+    width: 100%;
+    background-color: ${colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)'};
+    transition: background-color 0.3s ease;
+  `;
 
-    } 
-  } 
   return (
-    <AppShell
-      styles={{
-        main: {
-          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-        },
-      }}
-      header={<_Header/>}
-      padding={1}
-      {...getNavbar()}
-    >
-      {children}
-    </AppShell>
+    <>
+      <ModernHeader />
+      <Box css={mainStyles}>
+        {children}
+      </Box>
+      <Footer />
+    </>
   );
 }

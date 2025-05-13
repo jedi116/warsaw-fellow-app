@@ -1,35 +1,36 @@
-import React, {FC, createContext, useState} from 'react'
-import { useMounted } from '@/hooks'
+'use client';
+
+import React, { createContext, useState } from 'react'
 
 export interface AppComponentsContextType {
-  isNavbarOpen: boolean
-  setNavbarState?: (value: boolean) => void
+  // Add any app-wide state here
+  theme: 'light' | 'dark'
+  toggleTheme?: () => void
 }
 
 type ContextWrapperProps = {
-    children: JSX.Element
+  children: React.ReactNode
 }
 
-
 const defaultValue: AppComponentsContextType = {
- isNavbarOpen: false
+  theme: 'dark'
 }
 
 export const AppComponentsContext = createContext<AppComponentsContextType>(defaultValue)
 
-export const AppComponentsContextWrapper: FC<ContextWrapperProps> = ({ children }) => {
-  const [isNavbarOpen, setIsNavBarOpen] = useState<boolean>(false)
-  const setNavbarState: AppComponentsContextType['setNavbarState'] = (value: boolean) => {
-    console.log(value)
-    setIsNavBarOpen(value)
+export const AppComponentsContextWrapper = ({ children }: ContextWrapperProps) => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark')
   }
+  
   return (
     <AppComponentsContext.Provider value={{
-      isNavbarOpen,
-      setNavbarState
+      theme,
+      toggleTheme
     }}>
       {children}
     </AppComponentsContext.Provider>
   )
-  
 }

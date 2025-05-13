@@ -1,45 +1,50 @@
+'use client';
+
 import { useState, useContext } from 'react';
-import { Navbar, Center, Tooltip, UnstyledButton, createStyles, Stack, rem } from '@mantine/core';
+import { Center, Tooltip, UnstyledButton, Stack, rem, Text } from '@mantine/core';
 import {
   IconHome2,
-  IconGauge,
   IconDeviceDesktopAnalytics,
-  IconFingerprint,
-  IconCalendarStats,
   IconUser,
   IconSettings,
   IconLogout,
-  IconSwitchHorizontal,
   IconBarcode,
   IconAddressBook
 } from '@tabler/icons-react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { AppComponentsContext } from '@/context/AppComponentsContext';
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, logout } from "@/service/UI/firebaseUiClient"
+import { css } from '@emotion/react';
 
-const useStyles = createStyles((theme) => ({
-  link: {
-    width: rem(50),
-    height: rem(50),
-    borderRadius: theme.radius.md,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+// Using emotion css instead of Mantine's createStyles
+const useNavbarStyles = () => {
+  const linkStyle = css`
+    width: 100%;
+    height: ${rem(45)};
+    border-radius: var(--mantine-radius-md);
+    display: flex;
+    align-items: center;
+    padding: 0 ${rem(16)};
+    color: var(--mantine-color-text);
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
 
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[0],
-    },
-  },
+    &:hover {
+      background-color: var(--mantine-color-dark-5);
+    }
+  `;
 
-  active: {
-    '&, &:hover': {
-      backgroundColor: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background,
-      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
-    },
-  },
-}));
+  const activeStyle = css`
+    &, &:hover {
+      background-color: var(--mantine-primary-color-light);
+      color: var(--mantine-primary-color);
+    }
+  `;
+
+  return { linkStyle, activeStyle };
+};
 
 interface NavbarLinkProps {
   icon: React.FC<any>;
@@ -49,11 +54,12 @@ interface NavbarLinkProps {
 }
 
 function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
-  const { classes, cx } = useStyles();
+  const { linkStyle, activeStyle } = useNavbarStyles();
   return (
     <Tooltip label={label} position="right" transitionProps={{ duration: 0 }}>
-      <UnstyledButton onClick={onClick} className={cx(classes.link, { [classes.active]: active })}>
-        <Icon size="1.2rem" stroke={1.5} />
+      <UnstyledButton onClick={onClick} css={[linkStyle, active && activeStyle]}>
+        <Icon size="1.2rem" stroke={1.5} style={{ marginRight: '10px' }} />
+        <span>{label}</span>
       </UnstyledButton>
     </Tooltip>
   );
@@ -80,28 +86,62 @@ export function _Navbar() {
       key={link.label}
       active={index === active}
       onClick={() => {
-        setActive(index)
-        router.push(`${link.href}`)
-        setNavbarState && setTimeout(() => setNavbarState(false), 300)
+        setActive(index);
+        router.push(`${link.href}`);
+        
+        // On mobile, close the navbar after navigation
+        if (window.innerWidth < 768) {
+          setNavbarState && setTimeout(() => setNavbarState(false), 300);
+        }
       }}
     />
   ));
 
+  const navbarStyles = css`
+    height: calc(100vh - 70px);
+    width: 250px;
+    padding: var(--mantine-spacing-md);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 70px;
+    background-color: var(--mantine-color-dark-8);
+    z-index: 100;
+    border-right: 1px solid var(--mantine-color-dark-5);
+    transition: all 0.3s ease;
+    transform: translateX(${isNavbarOpen ? '0' : '-100%'});
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    
+    @media (min-width: 48em) {
+      transform: translateX(${isNavbarOpen ? '0' : '-100%'});
+    }
+    
+    @media (max-width: 48em) {
+      width: 200px;
+    }
+  `;
+
+  const sectionStyles = css`
+    flex: 1;
+    margin-top: 50px;
+  `;
+
   return (
-    <Navbar height='90%' width={{ base: 80 }} p="md" hiddenBreakpoint='sm' hidden={!isNavbarOpen}>
-      <Center>
-        Go to
+    <div css={navbarStyles}>
+      <Center mt={10} mb={20}>
+        <Text fw={700} fz="lg">Navigation</Text>
       </Center>
-      <Navbar.Section grow mt={50}>
-        <Stack justify="center" spacing={0}>
+      <div css={sectionStyles}>
+        <Stack justify="start" gap={5}>
           {links}
         </Stack>
-      </Navbar.Section>
-      <Navbar.Section>
-        <Stack justify="center" spacing={0}>
+      </div>
+      <div>
+        <Stack justify="center" gap={0}>
           {user && <NavbarLink icon={IconLogout} label="Logout" onClick={()=>logout()} />}
         </Stack>
-      </Navbar.Section>
-    </Navbar>
+      </div>
+    </div>
   );
 }
