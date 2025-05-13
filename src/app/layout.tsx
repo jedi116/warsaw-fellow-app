@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { AppComponentsContextWrapper } from '@/context/AppComponentsContext'
 import AppShell from '@/components/appshell'
-import { MantineProvider, MantineColorSchemeScript } from '@/components/MantineProvider'
+import { MantineProvider } from '@/components/MantineProvider'
 import { ColorSchemeScript } from '@mantine/core'
 // Import the progress bar in a client component, not directly in the layout
 
@@ -25,7 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <MantineColorSchemeScript />
+        {/* Use fixed defaultColorScheme to avoid hydration mismatch */}
+        <ColorSchemeScript defaultColorScheme="dark" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Center, Tooltip, UnstyledButton, Stack, rem, Text } from '@mantine/core';
 import {
   IconHome2,
@@ -9,12 +9,14 @@ import {
   IconSettings,
   IconLogout,
   IconBarcode,
-  IconAddressBook
+  IconAddressBook,
+  IconDashboard
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { AppComponentsContext } from '@/context/AppComponentsContext';
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, logout } from "@/service/UI/firebaseUiClient"
+import { useProfile } from '@/hooks/profile';
 import { css } from '@emotion/react';
 
 // Using emotion css instead of Mantine's createStyles
@@ -65,7 +67,7 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   );
 }
 
-const navItemList = [
+const baseNavItems = [
   { icon: IconHome2, label: 'Home', href: '/' },
   { icon: IconDeviceDesktopAnalytics, label: 'Members', href: '/members' },
   { icon: IconAddressBook, label: 'Attendance' , href: '/attendance'},
@@ -74,13 +76,30 @@ const navItemList = [
   { icon: IconSettings, label: 'Settings', href: '/settings' },
 ];
 
+// Admin-only nav item
+const adminNavItem = { icon: IconDashboard, label: 'Admin', href: '/admin' };
+
 export function _Navbar() {
   const [active, setActive] = useState(2);
   const router = useRouter()
   const {isNavbarOpen, setNavbarState} = useContext(AppComponentsContext)
   const [user, loading, error] = useAuthState(auth)
+  const { profile } = useProfile()
+  const [navItems, setNavItems] = useState(baseNavItems);
+  
+  // Add admin link if user has admin role
+  useEffect(() => {
+    if (profile?.role === 'admin') {
+      // Insert Admin item before Settings (which is the last item)
+      const newItems = [...baseNavItems];
+      newItems.splice(newItems.length - 1, 0, adminNavItem);
+      setNavItems(newItems);
+    } else {
+      setNavItems(baseNavItems);
+    }
+  }, [profile]);
 
-  const links = navItemList.map((link, index) => (
+  const links = navItems.map((link, index) => (
     <NavbarLink
       {...link}
       key={link.label}

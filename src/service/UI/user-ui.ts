@@ -39,66 +39,95 @@ export default new class UserService {
     async createUser (data: CreateUserFormDataType, user: FirebaseUser | undefined | null) {
         try {
             const idToken = await user?.getIdToken()
+            
+            // Create a cookie with the session token to pass to middleware
+            document.cookie = `session=${idToken}; path=/; max-age=3600; SameSite=Strict`;
+            
             const response= await fetch(`${window.location.origin}/api/users`, {
                 method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${idToken}` 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}` 
                 },
                 body: JSON.stringify(data)  
               })
+              
               if (response.status === 200) {
                 toast.success('Successfully Created User')
+                return true
               } else {
-                const responseMessage = await response.json() as {response: string}
-                toast.error('Error creating user: \n ' + responseMessage.response)
+                const responseMessage = await response.json() as {response: string, error?: string}
+                const errorMsg = responseMessage.error || responseMessage.response || 'Unknown error'
+                toast.error('Error creating user: ' + errorMsg)
+                return false
               }
         } catch (error: any) {
             console.log(error)
-            toast.error('Error creating user'+ error.message)
+            toast.error('Error creating user: '+ error.message)
+            return false
         }
     }
     async updateUser (userData: Partial<User>, user: FirebaseUser | undefined | null) {
       try {
         const idToken = await user?.getIdToken()
+        
+        // Create a cookie with the session token to pass to middleware
+        document.cookie = `session=${idToken}; path=/; max-age=3600; SameSite=Strict`;
+        
         const response= await fetch(`${window.location.origin}/api/users`, {
             method: 'PUT',
             headers: {
-              Authorization: `Bearer ${idToken}` 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}` 
             },
             body: JSON.stringify(userData)  
           })
-          console.log(response)
+          
           if (response.status === 200) {
             toast.success('Successfully Modified User')
+            return true
           } else {
-            const responseMessage = await response.json() as {response: string}
-            toast.error('Error modifing user: ' + responseMessage.response)
+            const responseMessage = await response.json() as {response: string, error?: string}
+            const errorMsg = responseMessage.error || responseMessage.response || 'Unknown error'
+            toast.error('Error modifying user: ' + errorMsg)
+            return false
           }
       } catch (error: any) {
         console.log(error)
-        toast.error('Error modifing user: '+ error.message)
+        toast.error('Error modifying user: '+ error.message)
+        return false
       }
     }
 
     async deleteUser (uid: string, user:FirebaseUser | undefined | null) {
       try {
         const idToken = await user?.getIdToken()
+        
+        // Create a cookie with the session token to pass to middleware
+        document.cookie = `session=${idToken}; path=/; max-age=3600; SameSite=Strict`;
+        
         const response = await fetch(`${window.location.origin}/api/users`,{
           method: 'DELETE',
           headers: {
-            Authorization: `Bearer ${idToken}` 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
           },
           body: JSON.stringify({uid})
         })
+        
         if (response.status === 200) {
           toast.success('Successfully Deleted User')
+          return true
         } else {
-          const responseMessage = await response.json() as {response: string}
-          toast.error('Error deleting user: ' + responseMessage.response)
+          const responseMessage = await response.json() as {response: string, error?: string}
+          const errorMsg = responseMessage.error || responseMessage.response || 'Unknown error'
+          toast.error('Error deleting user: ' + errorMsg)
+          return false
         }
       } catch (error: any) {
         console.log(error)
         toast.error('Error deleting user: ' + error.message)
+        return false
       }
     }
 }()

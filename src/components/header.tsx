@@ -31,7 +31,8 @@ import {
   IconSun,
   IconMoon,
   IconHeart,
-  IconSearch
+  IconSearch,
+  IconDashboard
 } from '@tabler/icons-react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, logout } from "@/service/UI/firebaseUiClient";
@@ -39,6 +40,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { css } from '@emotion/react';
 import { usePathname } from 'next/navigation';
+import { useProfile } from '@/hooks/profile';
 
 const navLinks = [
   { label: 'Home', href: '/', icon: IconHome },
@@ -46,6 +48,62 @@ const navLinks = [
   { label: 'Attendance', href: '/attendance', icon: IconCalendarEvent },
   { label: 'Codes', href: '/codes', icon: IconBarcode },
 ];
+
+// Admin Menu Item Component
+function AdminMenuItem() {
+  const { profile } = useProfile();
+  const router = useRouter();
+  
+  if (profile?.role !== 'admin') {
+    return null;
+  }
+  
+  return (
+    <Menu.Item 
+      leftSection={
+        <ThemeIcon size={32} radius="xl" variant="light" color="violet">
+          <IconDashboard size={16} />
+        </ThemeIcon>
+      }
+      onClick={() => router.push('/admin')}
+    >
+      <Text size="sm" fw={500}>Admin Dashboard</Text>
+      <Text size="xs" c="dimmed">Manage website content</Text>
+    </Menu.Item>
+  );
+}
+
+// Admin Mobile Menu Item
+function AdminMobileMenuItem({ handleNavigation }) {
+  const { profile } = useProfile();
+  
+  if (profile?.role !== 'admin') {
+    return null;
+  }
+  
+  return (
+    <UnstyledButton
+      onClick={() => handleNavigation('/admin')}
+      style={{
+        padding: '16px',
+        borderRadius: '12px',
+        backgroundColor: 'transparent',
+        border: '1px solid transparent',
+        transition: 'all 0.3s ease',
+      }}
+    >
+      <Group>
+        <ThemeIcon size={36} radius="xl" color="violet" variant="light">
+          <IconDashboard size={18} />
+        </ThemeIcon>
+        <div>
+          <Text size="lg" fw={600}>Admin Dashboard</Text>
+          <Text size="xs" c="dimmed">Manage website content</Text>
+        </div>
+      </Group>
+    </UnstyledButton>
+  );
+}
 
 export function ModernHeader() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -384,6 +442,9 @@ export function ModernHeader() {
                       <Text size="xs" c="dimmed">Manage your personal information</Text>
                     </Menu.Item>
                     
+                    {/* Admin Dashboard MenuItem */}
+                    <AdminMenuItem />
+                    
                     <Menu.Item 
                       leftSection={
                         <ThemeIcon size={32} radius="xl" variant="light" color="blue">
@@ -525,6 +586,9 @@ export function ModernHeader() {
                   </div>
                 </Group>
               </UnstyledButton>
+              
+              {/* Admin Dashboard Mobile Menu Item */}
+              <AdminMobileMenuItem handleNavigation={handleNavigation} />
               
               <UnstyledButton
                 onClick={() => handleNavigation('/settings')}

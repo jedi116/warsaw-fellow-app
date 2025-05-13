@@ -377,7 +377,7 @@ export default function UsersList({ data }: UsersTableProps) {
               <Box visibleFrom="md" style={{ flexGrow: 1 }}>
                 <Group spacing={10} position="apart" mt="md">
                   <Tooltip label="Email" withArrow>
-                    <Group spacing={6} noWrap>
+                    <Group spacing={6} wrap="nowrap">
                       <ThemeIcon size="sm" radius="xl" variant="light" color="blue">
                         <IconMail size={14} />
                       </ThemeIcon>
@@ -388,7 +388,7 @@ export default function UsersList({ data }: UsersTableProps) {
                   </Tooltip>
                   
                   <Tooltip label="Birthday" withArrow>
-                    <Group spacing={6} noWrap>
+                    <Group spacing={6} wrap="nowrap">
                       <ThemeIcon size="sm" radius="xl" variant="light" color="grape">
                         <IconCalendar size={14} />
                       </ThemeIcon>
@@ -401,7 +401,7 @@ export default function UsersList({ data }: UsersTableProps) {
                 
                 <Group spacing={10} position="apart" mt="sm">
                   <Tooltip label="Phone" withArrow>
-                    <Group spacing={6} noWrap>
+                    <Group spacing={6} wrap="nowrap">
                       <ThemeIcon size="sm" radius="xl" variant="light" color="green">
                         <IconPhone size={14} />
                       </ThemeIcon>
@@ -412,7 +412,7 @@ export default function UsersList({ data }: UsersTableProps) {
                   </Tooltip>
                   
                   <Tooltip label="Telegram" withArrow>
-                    <Group spacing={6} noWrap>
+                    <Group spacing={6} wrap="nowrap">
                       <ThemeIcon size="sm" radius="xl" variant="light" color="cyan">
                         <IconBrandTelegram size={14} />
                       </ThemeIcon>

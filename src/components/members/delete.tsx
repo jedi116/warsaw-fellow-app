@@ -60,7 +60,7 @@ export default function Delete() {
       <Group position="apart" mt="lg">
         <Button 
           variant="default" 
-          leftIcon={<IconX size={16} />} 
+          leftSection={<IconX size={16} />} 
           onClick={closeModal}
           radius="md"
         >
@@ -68,7 +68,7 @@ export default function Delete() {
         </Button>
         <Button 
           color="red" 
-          leftIcon={<IconTrash size={16} />} 
+          leftSection={<IconTrash size={16} />} 
           onClick={onDelete}
           radius="md"
         >

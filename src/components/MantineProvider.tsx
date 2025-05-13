@@ -5,6 +5,7 @@ import {
   createTheme, 
   ColorSchemeScript
 } from '@mantine/core';
+import { useEffect, useState } from 'react';
 
 // Create the theme
 const theme = createTheme({
@@ -85,8 +86,15 @@ const theme = createTheme({
   },
 });
 
-// Simple MantineProvider with defaultColorScheme to avoid hydration issues
+// MantineProvider with client-side init to avoid hydration issues
 export function MantineProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  
+  // Mount on client only
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <BaseMantineProvider
       theme={theme}

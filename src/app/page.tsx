@@ -16,42 +16,48 @@ import {
   Title,
   useMantineColorScheme,
   rem,
+  Skeleton,
+  ThemeIcon,
 } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
-import { IconCalendarEvent, IconMapPin, IconBook, IconUsers } from '@tabler/icons-react';
+import { 
+  IconCalendarEvent, 
+  IconMapPin, 
+  IconBook, 
+  IconUsers, 
+  IconHeart,
+  IconStar,
+  IconMicrophone,
+  IconMusic
+} from '@tabler/icons-react';
 import backgroundImage from '../../public/photo1.jpeg';
 import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/service/UI/firebaseUiClient';
+import { usePrograms, useGalleryImages, useScriptures } from '@/hooks/content';
+import { IconType } from '@/interface/content';
 
-// Sample data
+// Map icon strings to actual components
+const getIconComponent = (iconName: string, size = 40) => {
+  switch(iconName as IconType) {
+    case 'calendar': return <IconCalendarEvent size={size} />;
+    case 'book': return <IconBook size={size} />;
+    case 'users': return <IconUsers size={size} />;
+    case 'heart': return <IconHeart size={size} />;
+    case 'star': return <IconStar size={size} />;
+    case 'microphone': return <IconMicrophone size={size} />;
+    case 'music': return <IconMusic size={size} />;
+    default: return <IconCalendarEvent size={size} />;
+  }
+};
+
+// Sample data (fallbacks)
 const SCRIPTURE_OF_THE_DAY = {
   verse: "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.",
   reference: "John 3:16",
 };
-
-const PROGRAMS = [
-  {
-    title: "Sunday Service",
-    time: "10:00 AM - 12:00 PM",
-    description: "Weekly worship service with praise, prayer, and teaching from the Bible.",
-    icon: IconCalendarEvent,
-  },
-  {
-    title: "Bible Study",
-    time: "Wednesday, 7:00 PM",
-    description: "Midweek Bible study for deeper understanding of Scripture.",
-    icon: IconBook,
-  },
-  {
-    title: "Fellowship Night",
-    time: "Friday, 6:30 PM",
-    description: "Community gathering with food, games, and conversation.",
-    icon: IconUsers,
-  },
-];
 
 const LOCATION = {
   address: "123 Warsaw Street, Warsaw, Poland",
@@ -59,13 +65,16 @@ const LOCATION = {
   mapLink: "https://maps.google.com",
 };
 
-const GALLERY_IMAGES = Array(6).fill(backgroundImage);
-
 export default function Home() {
   const [user] = useAuthState(auth);
   const router = useRouter();
   // Use fixed dark colorScheme for now to avoid hydration issues
   const colorScheme = 'dark';
+
+  // Fetch programs, gallery images, and scripture
+  const { programs, loading: programsLoading } = usePrograms(true);
+  const { images, loading: imagesLoading } = useGalleryImages(true);
+  const { scriptures, loading: scripturesLoading } = useScriptures(true);
   
   // Refs for scroll animations
   const programsRef = useRef<HTMLDivElement>(null);
@@ -186,12 +195,31 @@ export default function Home() {
         <Container size="lg">
           <Stack align="center" spacing="lg">
             <Title order={2} ta="center" c="indigo.3">Scripture of the Day</Title>
-            <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
-              "{SCRIPTURE_OF_THE_DAY.verse}"
-            </Text>
-            <Text c="dimmed" ta="center">
-              {SCRIPTURE_OF_THE_DAY.reference}
-            </Text>
+            
+            {scripturesLoading ? (
+              <>
+                <Skeleton height={120} width="80%" radius="sm" />
+                <Skeleton height={20} width="30%" radius="sm" />
+              </>
+            ) : scriptures.length === 0 ? (
+              <>
+                <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                  "{SCRIPTURE_OF_THE_DAY.verse}"
+                </Text>
+                <Text c="dimmed" ta="center">
+                  {SCRIPTURE_OF_THE_DAY.reference}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                  "{scriptures[0].verse}"
+                </Text>
+                <Text c="dimmed" ta="center">
+                  {scriptures[0].reference}
+                </Text>
+              </>
+            )}
           </Stack>
         </Container>
       </Box>
@@ -201,22 +229,37 @@ export default function Home() {
         <Stack spacing="xl">
           <Title order={2} ta="center" mb="xl">Our Programs & Schedule</Title>
           
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
-            {PROGRAMS.map((program, index) => (
-              <Card 
-                key={index} 
-                withBorder 
-                padding="xl"
-                radius="md"
-                css={cardHoverStyles}
-              >
-                <program.icon size={40} color="var(--mantine-color-indigo-6)" style={{ marginBottom: '1rem' }} />
-                <Title order={3} mb="xs">{program.title}</Title>
-                <Text fw={600} c="indigo.5" mb="md">{program.time}</Text>
-                <Text c="dimmed">{program.description}</Text>
-              </Card>
-            ))}
-          </SimpleGrid>
+          {programsLoading ? (
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+              {[1, 2, 3].map((_, index) => (
+                <Card key={index} withBorder padding="xl" radius="md">
+                  <Skeleton height={40} circle mb="xl" />
+                  <Skeleton height={30} width="70%" mb="sm" />
+                  <Skeleton height={20} width="40%" mb="lg" />
+                  <Skeleton height={50} mb="md" />
+                </Card>
+              ))}
+            </SimpleGrid>
+          ) : (
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+              {programs.map((program) => (
+                <Card 
+                  key={program.id} 
+                  withBorder 
+                  padding="xl"
+                  radius="md"
+                  css={cardHoverStyles}
+                >
+                  <ThemeIcon size={40} radius="md" color="indigo.6" mb="md">
+                    {getIconComponent(program.icon)}
+                  </ThemeIcon>
+                  <Title order={3} mb="xs">{program.title}</Title>
+                  <Text fw={600} c="indigo.5" mb="md">{program.time}</Text>
+                  <Text c="dimmed">{program.description}</Text>
+                </Card>
+              ))}
+            </SimpleGrid>
+          )}
         </Stack>
       </Container>
       
@@ -265,19 +308,30 @@ export default function Home() {
         <Stack spacing="xl">
           <Title order={2} ta="center" mb="xl">Events Gallery</Title>
           
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-            {GALLERY_IMAGES.map((image, index) => (
-              <Image
-                key={index}
-                src={image.src}
-                alt={`Gallery image ${index + 1}`}
-                radius="md"
-                h={200}
-                style={{ objectFit: 'cover' }}
-                css={cardHoverStyles}
-              />
-            ))}
-          </SimpleGrid>
+          {imagesLoading ? (
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+              {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                <Skeleton key={index} height={200} radius="md" />
+              ))}
+            </SimpleGrid>
+          ) : images.length === 0 ? (
+            <Text c="dimmed" ta="center" py={30}>No gallery images available at the moment.</Text>
+          ) : (
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+              {images.map((image) => (
+                <Image
+                  key={image.id}
+                  src={image.imageUrl}
+                  alt={image.title}
+                  radius="md"
+                  h={200}
+                  style={{ objectFit: 'cover' }}
+                  css={cardHoverStyles}
+                  placeholder={<Skeleton height={200} radius="md" />}
+                />
+              ))}
+            </SimpleGrid>
+          )}
         </Stack>
       </Container>
       

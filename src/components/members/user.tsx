@@ -219,7 +219,7 @@ export default function UserInfoAction() {
                       borderRadius: '6px'
                     }}
                     spacing={8}
-                    style={{ flexWrap: 'nowrap' }}
+                    wrap="nowrap"
                   >
                     <Text size="sm" lineClamp={1}>{team}</Text>
                     <Badge color="indigo" variant="light" style={{ flexShrink: 0 }}>Active</Badge>
@@ -243,7 +243,7 @@ export default function UserInfoAction() {
         fullWidth
         mt="xl"
         radius="md"
-        leftIcon={<IconMail size={16} />}
+        leftSection={<IconMail size={16} />}
       >
         Contact {selectedMember.firstName}
       </Button>
