@@ -1,12 +1,7 @@
 'use client';
 
-import { Button, Container, Group, Text, Title, MantineProvider, createTheme } from '@mantine/core';
-import { useEffect } from 'react';
-
-// Create a simple theme for the error page
-const theme = createTheme({
-  primaryColor: 'indigo',
-});
+import React from 'react';
+import { Button, Container, Title, Text, Group } from '@mantine/core';
 
 export default function GlobalError({
   error,
@@ -15,27 +10,25 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
+  React.useEffect(() => {
     // Log the error to an error reporting service
-    console.error(error);
+    console.error('Global error caught:', error);
   }, [error]);
 
   return (
-    <html>
+    <html lang="en">
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="dark">
-          <Container style={{ textAlign: 'center', paddingTop: '80px' }}>
-            <Title>Something went wrong!</Title>
-            <Text size="lg" mb="xl" mt="md">
-              A critical error occurred. Please try again later.
-            </Text>
-            <Group justify="center">
-              <Button onClick={reset}>
-                Try again
-              </Button>
-            </Group>
-          </Container>
-        </MantineProvider>
+        <Container style={{ textAlign: 'center', paddingTop: '80px' }}>
+          <Title>Something went wrong!</Title>
+          <Text size="lg" mb="xl" mt="md">
+            Sorry, a critical error occurred. Please try again.
+          </Text>
+          <Group justify="center">
+            <Button onClick={reset}>
+              Try again
+            </Button>
+          </Group>
+        </Container>
       </body>
     </html>
   );

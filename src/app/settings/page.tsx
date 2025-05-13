@@ -1,6 +1,6 @@
 'use client';
 
-import { Center, Button, Flex } from "@mantine/core";
+import { Center, Button, Flex, Text } from "@mantine/core";
 import { useProfile } from "@/hooks/profile";
 import ThemeToggle from "@/components/themeToggle";
 import { useLoginRedirect } from "@/hooks/user";
@@ -13,7 +13,8 @@ export default function Settings() {
         <Center>
             <Flex direction='column' gap='xl'>
                 <div>
-                   Change Theme:  <ThemeToggle />
+                   <Text mb={6}>Change Theme:</Text> 
+                   <ThemeToggle />
                 </div>
                 <div>
                     Want to delete account and personal data?

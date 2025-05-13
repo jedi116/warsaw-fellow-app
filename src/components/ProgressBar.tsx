@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { css } from '@emotion/react';
 import { Progress } from '@mantine/core';
 
@@ -9,7 +9,6 @@ export function NavigationProgress() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [progress, setProgress] = useState(0);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     // Reset progress when route changes
@@ -35,7 +34,7 @@ export function NavigationProgress() {
       clearTimeout(timer4);
       clearTimeout(timer5);
     };
-  }, [pathname, searchParams]);
+  }, [pathname]); // Only depend on pathname changes, not searchParams
 
   const progressBarStyles = css`
     position: fixed;

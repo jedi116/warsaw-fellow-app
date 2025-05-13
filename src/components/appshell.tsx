@@ -3,8 +3,9 @@
 import React from 'react';
 import { ModernHeader } from './header';
 import { Footer } from './footer';
-import { Box, useMantineColorScheme } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { css } from '@emotion/react';
+import { NavigationProgress } from './ProgressBar';
 
 type AppShellProps = {
   children: React.ReactNode
@@ -25,6 +26,7 @@ export default function AppShell(props: AppShellProps) {
 
   return (
     <>
+      <NavigationProgress />
       <ModernHeader />
       <Box css={mainStyles}>
         {children}

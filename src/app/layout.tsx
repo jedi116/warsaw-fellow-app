@@ -9,7 +9,7 @@ import { AppComponentsContextWrapper } from '@/context/AppComponentsContext'
 import AppShell from '@/components/appshell'
 import { MantineProvider, MantineColorSchemeScript } from '@/components/MantineProvider'
 import { ColorSchemeScript } from '@mantine/core'
-import { NavigationProgress } from '@/components/ProgressBar'
+// Import the progress bar in a client component, not directly in the layout
 
 export const metadata: Metadata = {
   title: 'Warsaw Ethiopian Fellowship',
@@ -32,7 +32,6 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider>
-          <NavigationProgress />
           <ToastContainer 
             position="top-right"
             autoClose={5000}

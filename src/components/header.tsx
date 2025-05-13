@@ -292,34 +292,6 @@ export function ModernHeader() {
 
             {/* User menu or auth buttons */}
             <Group gap="md" visibleFrom="md">
-              <ThemeIcon 
-                size={42} 
-                radius="xl" 
-                color="dark.6" 
-                variant="light"
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                }}
-              >
-                <IconSearch size={18} />
-              </ThemeIcon>
-              
-              <ThemeIcon 
-                size={42} 
-                radius="xl" 
-                color={colorScheme === 'dark' ? 'blue.7' : 'yellow.4'} 
-                variant="light"
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-                onClick={() => toggleColorScheme()}
-              >
-                {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
-              </ThemeIcon>
-              
               {!user ? (
                 <Group gap="sm">
                   <Button 
@@ -445,34 +417,6 @@ export function ModernHeader() {
 
             {/* Mobile menu button */}
             <Group gap="md" hiddenFrom="md">
-              <ThemeIcon 
-                size={42} 
-                radius="xl" 
-                color="dark.6" 
-                variant="light"
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                }}
-              >
-                <IconSearch size={18} />
-              </ThemeIcon>
-              
-              <ThemeIcon 
-                size={42} 
-                radius="xl" 
-                color={colorScheme === 'dark' ? 'blue.7' : 'yellow.4'} 
-                variant="light"
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-                onClick={() => toggleColorScheme()}
-              >
-                {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
-              </ThemeIcon>
-              
               <Button 
                 variant="gradient"
                 gradient={{ from: 'dark.6', to: 'dark.5', deg: 45 }}

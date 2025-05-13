@@ -21,8 +21,12 @@ try {
   }
 }
 
+// Export the auth and firestore instances properly
+export const auth = admin.auth();
+export const db = admin.firestore();
+
 export function verifyIdToken(token: string) {
-  return admin.auth().verifyIdToken(token);
+  return auth.verifyIdToken(token);
 }
 
 export default admin;
