@@ -1,24 +1,29 @@
-import { Center, Button, Flex } from "@mantine/core"
-import { useProfile } from "@/hooks/profile"
-import ThemeToggle from "@/components/themeToggle"
-import { useLoginRedirect } from "@/hooks/user"
-export default function Settings () {
-    const {profile} = useProfile()
-    useLoginRedirect()
+'use client';
+
+import { Center, Button, Flex, Text } from "@mantine/core";
+import { useProfile } from "@/hooks/profile";
+import ThemeToggle from "@/components/themeToggle";
+import { useLoginRedirect } from "@/hooks/user";
+
+export default function Settings() {
+    const { profile } = useProfile();
+    useLoginRedirect();
+    
     return (
         <Center>
             <Flex direction='column' gap='xl'>
                 <div>
-                   Change Theme:  <ThemeToggle />
+                   <Text mb={6}>Change Theme:</Text> 
+                   <ThemeToggle />
                 </div>
                 <div>
-                    Want to delete account and personal data ?
+                    Want to delete account and personal data?
                     <Button style={{marginLeft:'10px'}} color="red">
                         Yes, delete account
                     </Button>
                 </div>
                 <div>
-                    Reset Password ? 
+                    Reset Password? 
                     <Button style={{marginLeft:'10px'}} color="green">
                         Yes, Reset
                     </Button>
@@ -26,7 +31,7 @@ export default function Settings () {
                 {
                     profile && profile.role !== 'admin' && (
                         <div>
-                            Request Admin Access ? 
+                            Request Admin Access? 
                             <Button style={{marginLeft:'10px'}} color="green">
                                 Yes, request access
                             </Button>
@@ -35,5 +40,5 @@ export default function Settings () {
                 }
             </Flex>
         </Center>
-    )
+    );
 }

@@ -1,4 +1,6 @@
-import React, {FC, createContext, use, useEffect, useState} from 'react'
+'use client';
+
+import React, {createContext, useEffect, useState} from 'react'
 import { UserWithPic } from '@/interface/user'
 import { useDisclosure } from '@mantine/hooks';
 import { User } from '@/interface/user';
@@ -35,10 +37,10 @@ const defaultValue : MemberContextType = {
 export const MemberContext = createContext<MemberContextType>(defaultValue)
 
 type Props = {
-    children: JSX.Element
+    children: React.ReactNode
 }
 
-export const MemberContextWrapper: FC<Props> = ({children}) => {
+export const MemberContextWrapper = ({children}: Props) => {
     const [user, setUser] = useState<UserWithPic | null>(null)
     const [users, setUsers] = useState<UserWithPic[] | undefined>()
     const [modalType, setModalType] = useState<ModalTypes>(null)

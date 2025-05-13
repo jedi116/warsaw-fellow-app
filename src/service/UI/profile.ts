@@ -57,8 +57,9 @@ export default new class Profile {
             const profilePictureRef = ref(fireBaseStorage, `${imageStoragePath}${uid}`)
             const profilePicture = await getDownloadURL(profilePictureRef)
             return profilePicture
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            // Do not log common errors for missing pictures
+            // This prevents console log pollution
             return null
         }
     }
