@@ -16,12 +16,229 @@ import {
   limit
 } from 'firebase/firestore';
 import { db, fireBaseStorage } from './firebaseUiClient';
-import { GalleryImage, Program, Scripture } from '@/interface/content';
+import { Event, EventStatus, GalleryImage, Program, Scripture } from '@/interface/content';
 import { toast } from 'react-toastify';
 import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
 export default new class ContentService {
+  // Event Methods
+  getEvents = async (status?: EventStatus) => {
+    try {
+      let q;
+      
+      if (status) {
+        q = query(
+          collection(db, 'events'),
+          where('status', '==', status),
+          orderBy('date', status === EventStatus.PAST ? 'desc' : 'asc')
+        );
+      } else {
+        q = query(
+          collection(db, 'events'),
+          orderBy('date', 'desc')
+        );
+      }
+      
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => {
+        return {
+          ...doc.data(),
+          id: doc.id
+        } as Event;
+      });
+    } catch (error) {
+      console.error('Error getting events:', error);
+      toast.error('Failed to load events');
+      return [];
+    }
+  }
+
+  getEvent = async (id: string) => {
+    try {
+      const docRef = doc(db, 'events', id);
+      const docSnapshot = await getDoc(docRef);
+      
+      if (docSnapshot.exists()) {
+        return {
+          ...docSnapshot.data(),
+          id: docSnapshot.id
+        } as Event;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error getting event:', error);
+      toast.error('Failed to load event');
+      return null;
+    }
+  }
+
+  uploadEventImage = async (file: File) => {
+    try {
+      // Create a unique filename
+      const fileName = `events/${uuidv4()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+      const storageRef = ref(fireBaseStorage, fileName);
+      
+      // Upload the file
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const downloadURL = await getDownloadURL(uploadTask.ref);
+      
+      return { imageUrl: downloadURL, storageRef: fileName };
+    } catch (error) {
+      console.error('Error uploading event image:', error);
+      toast.error('Failed to upload event image');
+      return null;
+    }
+  }
+
+  saveEvent = async (
+    event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>,
+    imageFile?: File
+  ) => {
+    try {
+      let imageData = {};
+      
+      if (imageFile) {
+        const uploadResult = await this.uploadEventImage(imageFile);
+        if (uploadResult) {
+          imageData = uploadResult;
+        }
+      }
+      
+      const newEvent = {
+        ...event,
+        ...imageData,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      };
+      
+      const docRef = await addDoc(collection(db, 'events'), newEvent);
+      toast.success('Event saved successfully!');
+      
+      return {
+        ...newEvent,
+        id: docRef.id
+      } as Event;
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast.error('Failed to save event');
+      return null;
+    }
+  }
+
+  updateEvent = async (
+    id: string, 
+    event: Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt'>>,
+    imageFile?: File
+  ) => {
+    try {
+      let imageData = {};
+      
+      if (imageFile) {
+        // First check if there's an existing image to delete
+        const existingEvent = await this.getEvent(id);
+        if (existingEvent && existingEvent.storageRef) {
+          try {
+            const oldImageRef = ref(fireBaseStorage, existingEvent.storageRef);
+            await deleteObject(oldImageRef);
+          } catch (err) {
+            console.log('Previous image not found or already deleted');
+          }
+        }
+        
+        // Upload new image
+        const uploadResult = await this.uploadEventImage(imageFile);
+        if (uploadResult) {
+          imageData = uploadResult;
+        }
+      }
+      
+      const docRef = doc(db, 'events', id);
+      const updateData = {
+        ...event,
+        ...imageData,
+        updatedAt: Timestamp.now()
+      };
+      
+      await updateDoc(docRef, updateData);
+      toast.success('Event updated successfully!');
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating event:', error);
+      toast.error('Failed to update event');
+      return false;
+    }
+  }
+
+  deleteEvent = async (id: string) => {
+    try {
+      // First, get the event data to find the storage reference if there's an image
+      const docRef = doc(db, 'events', id);
+      const docSnapshot = await getDoc(docRef);
+      
+      if (docSnapshot.exists()) {
+        const eventData = docSnapshot.data() as Event;
+        
+        // Delete the image from storage if it exists
+        if (eventData.storageRef) {
+          try {
+            const storageReference = ref(fireBaseStorage, eventData.storageRef);
+            await deleteObject(storageReference);
+          } catch (err) {
+            console.log('Image not found or already deleted');
+          }
+        }
+        
+        // Delete the event document
+        await deleteDoc(docRef);
+        
+        toast.success('Event deleted successfully!');
+        return true;
+      } else {
+        throw new Error('Event not found');
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast.error('Failed to delete event');
+      return false;
+    }
+  }
+
+  updateEventStatus = async (id: string, status: EventStatus) => {
+    try {
+      const docRef = doc(db, 'events', id);
+      await updateDoc(docRef, { 
+        status,
+        updatedAt: Timestamp.now()
+      });
+      
+      toast.success(`Event marked as ${status}`);
+      return true;
+    } catch (error) {
+      console.error('Error updating event status:', error);
+      toast.error('Failed to update event status');
+      return false;
+    }
+  }
+
+  toggleEventHighlight = async (id: string, isHighlighted: boolean) => {
+    try {
+      const docRef = doc(db, 'events', id);
+      await updateDoc(docRef, { 
+        isHighlighted,
+        updatedAt: Timestamp.now()
+      });
+      
+      toast.success(isHighlighted ? 'Event highlighted' : 'Event unhighlighted');
+      return true;
+    } catch (error) {
+      console.error('Error toggling event highlight:', error);
+      toast.error('Failed to update event');
+      return false;
+    }
+  }
   // Program Methods
   getPrograms = async (activeOnly = false) => {
     try {

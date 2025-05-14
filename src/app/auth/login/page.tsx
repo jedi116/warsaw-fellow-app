@@ -118,7 +118,13 @@ export default function Login() {
             
             <Group position="apart" mt="sm">
               <Checkbox label="Remember me" radius="xs" />
-              <Anchor component="button" size="sm" fw={500}>
+              <Anchor 
+                component={Link} 
+                href="/auth/forgot-password" 
+                size="sm" 
+                fw={500}
+                aria-label="Reset your password"
+              >
                 Forgot password?
               </Anchor>
             </Group>

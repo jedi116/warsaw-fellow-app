@@ -18,10 +18,12 @@ export default function AppShell(props: AppShellProps) {
   
   const mainStyles = css`
     margin-top: 90px;
-    min-height: calc(100vh - 90px);
+    min-height: calc(100vh - 90px - 53px); /* Subtract footer height */
     width: 100%;
     background-color: ${colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)'};
     transition: background-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
   `;
 
   return (

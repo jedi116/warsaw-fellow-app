@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Avatar,
   Badge,
@@ -362,13 +360,13 @@ export default function UsersList({ data }: UsersTableProps) {
                   {member.firstName.charAt(0)}{member.lastName.charAt(0)}
                 </Avatar>
                 
-                <Text c="dimmed" size="sm" mb="md">
+                <Box mb="md">
                   {member.role === 'admin' ? (
                     <Badge color="indigo" variant="light">Administrator</Badge>
                   ) : (
                     <Badge color="gray" variant="light">Member</Badge>
                   )}
-                </Text>
+                </Box>
               </Box>
               
               <Divider my="sm" style={{ margin: '0.75rem 0' }} />
@@ -426,7 +424,7 @@ export default function UsersList({ data }: UsersTableProps) {
               
               {/* Mobile contact info - stacked */}
               <Stack spacing={8} mt="md" hiddenFrom="md" style={{ flexGrow: 1 }}>
-                <Group spacing={6} noWrap>
+                <Group spacing={6} wrap="nowrap">
                   <ThemeIcon size="sm" radius="xl" variant="light" color="blue">
                     <IconMail size={14} />
                   </ThemeIcon>
@@ -440,7 +438,7 @@ export default function UsersList({ data }: UsersTableProps) {
                   </Text>
                 </Group>
                 
-                <Group spacing={6} noWrap>
+                <Group spacing={6} wrap="nowrap">
                   <ThemeIcon size="sm" radius="xl" variant="light" color="grape">
                     <IconCalendar size={14} />
                   </ThemeIcon>
@@ -449,7 +447,7 @@ export default function UsersList({ data }: UsersTableProps) {
                   </Text>
                 </Group>
                 
-                <Group spacing={6} noWrap>
+                <Group spacing={6} wrap="nowrap">
                   <ThemeIcon size="sm" radius="xl" variant="light" color="green">
                     <IconPhone size={14} />
                   </ThemeIcon>
@@ -458,7 +456,7 @@ export default function UsersList({ data }: UsersTableProps) {
                   </Text>
                 </Group>
                 
-                <Group spacing={6} noWrap>
+                <Group spacing={6} wrap="nowrap">
                   <ThemeIcon size="sm" radius="xl" variant="light" color="cyan">
                     <IconBrandTelegram size={14} />
                   </ThemeIcon>
@@ -517,7 +515,7 @@ export default function UsersList({ data }: UsersTableProps) {
                 radius="md" 
                 css={[cardStyles, memberCardStyles]}
               >
-                <Group position="apart" noWrap align="flex-start">
+                <Group position="apart" wrap="nowrap" align="flex-start">
                   <Avatar 
                     src={member.profilePicture || profilePlacholder.src} 
                     size={50} 
@@ -590,7 +588,7 @@ export default function UsersList({ data }: UsersTableProps) {
                 <Divider my="sm" />
                 
                 <Stack spacing={8}>
-                  <Group spacing={6} noWrap>
+                  <Group spacing={6} wrap="nowrap">
                     <ThemeIcon size="sm" radius="xl" variant="light" color="blue">
                       <IconMail size={14} />
                     </ThemeIcon>
@@ -599,7 +597,7 @@ export default function UsersList({ data }: UsersTableProps) {
                     </Text>
                   </Group>
                   
-                  <Group spacing={6} noWrap>
+                  <Group spacing={6} wrap="nowrap">
                     <ThemeIcon size="sm" radius="xl" variant="light" color="green">
                       <IconPhone size={14} />
                     </ThemeIcon>

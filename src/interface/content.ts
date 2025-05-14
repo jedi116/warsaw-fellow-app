@@ -32,6 +32,27 @@ export interface Scripture {
   updatedAt: Timestamp;
 }
 
+export enum EventStatus {
+  UPCOMING = 'upcoming',
+  PAST = 'past',
+  CANCELLED = 'cancelled'
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: Timestamp;
+  time: string;
+  location: string;
+  imageUrl?: string;
+  storageRef?: string;
+  status: EventStatus;
+  isHighlighted: boolean;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
 export type IconType = 
   | 'calendar' 
   | 'book' 

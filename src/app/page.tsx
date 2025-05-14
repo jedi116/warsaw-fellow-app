@@ -18,6 +18,7 @@ import {
   rem,
   Skeleton,
   ThemeIcon,
+  Alert,
 } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { useEffect, useRef, useState } from 'react';
@@ -30,13 +31,14 @@ import {
   IconHeart,
   IconStar,
   IconMicrophone,
-  IconMusic
+  IconMusic,
+  IconAlertCircle
 } from '@tabler/icons-react';
 import backgroundImage from '../../public/photo1.jpeg';
 import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/service/UI/firebaseUiClient';
-import { usePrograms, useGalleryImages, useScriptures } from '@/hooks/content';
+import { usePublicPrograms, usePublicGalleryImages, usePublicScriptures } from '@/hooks/publicContent';
 import { IconType } from '@/interface/content';
 
 // Map icon strings to actual components
@@ -60,21 +62,81 @@ const SCRIPTURE_OF_THE_DAY = {
 };
 
 const LOCATION = {
-  address: "123 Warsaw Street, Warsaw, Poland",
-  description: "Our fellowship meets at the community center near the central park. Parking is available.",
-  mapLink: "https://maps.google.com",
+  address: "Nadnieprzańska 7, 04-205 Warsaw, Poland",
+  description: "Our fellowship meets at the community center. Parking is available nearby.",
+  mapLink: "https://www.google.com/maps?q=Nadnieprzańska+7,+04-205+Warsaw+Poland",
+  mapEmbedSrc: "https://maps.google.com/maps?q=Nadnieprzańska+7,+04-205+Warsaw+Poland&t=&z=15&ie=UTF8&iwloc=&output=embed",
 };
 
+// Error boundary component
+function ErrorFallback({ error, resetErrorBoundary, children }: { error: Error, resetErrorBoundary: () => void, children: React.ReactNode }) {
+  return (
+    <Alert
+      icon={<IconAlertCircle size={18} />}
+      title="An error occurred"
+      color="red"
+      mb="lg"
+    >
+      <Text size="sm" mb="md">Something went wrong loading this section.</Text>
+      <Button size="xs" onClick={resetErrorBoundary} variant="outline">Try again</Button>
+      {children}
+    </Alert>
+  );
+}
+
+// Wrapper component with error handling
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    // Add error handler for unhandled promise rejections
+    const handleError = (event: ErrorEvent) => {
+      console.error('Unhandled error:', event.error);
+      setError(event.error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  const resetErrorBoundary = () => {
+    setHasError(false);
+    setError(null);
+  };
+
+  if (hasError && error) {
+    return (
+      <ErrorFallback error={error} resetErrorBoundary={resetErrorBoundary}>
+        {children}
+      </ErrorFallback>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 export default function Home() {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
   // Use fixed dark colorScheme for now to avoid hydration issues
   const colorScheme = 'dark';
+  
+  // Set initial loading state to prevent premature Firebase access
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Wait for auth state to be determined before initializing
+  useEffect(() => {
+    if (!loading) {
+      setIsInitialized(true);
+    }
+  }, [loading]);
 
-  // Fetch programs, gallery images, and scripture
-  const { programs, loading: programsLoading } = usePrograms(true);
-  const { images, loading: imagesLoading } = useGalleryImages(true);
-  const { scriptures, loading: scripturesLoading } = useScriptures(true);
+  // Use public content hooks that don't require authentication
+  const { programs, loading: programsLoading } = usePublicPrograms(true);
+  const { images, loading: imagesLoading } = usePublicGalleryImages(true);
+  const { scriptures, loading: scripturesLoading } = usePublicScriptures(true);
   
   // Refs for scroll animations
   const programsRef = useRef<HTMLDivElement>(null);
@@ -196,30 +258,32 @@ export default function Home() {
           <Stack align="center" spacing="lg">
             <Title order={2} ta="center" c="indigo.3">Scripture of the Day</Title>
             
-            {scripturesLoading ? (
-              <>
-                <Skeleton height={120} width="80%" radius="sm" />
-                <Skeleton height={20} width="30%" radius="sm" />
-              </>
-            ) : scriptures.length === 0 ? (
-              <>
-                <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
-                  "{SCRIPTURE_OF_THE_DAY.verse}"
-                </Text>
-                <Text c="dimmed" ta="center">
-                  {SCRIPTURE_OF_THE_DAY.reference}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
-                  "{scriptures[0].verse}"
-                </Text>
-                <Text c="dimmed" ta="center">
-                  {scriptures[0].reference}
-                </Text>
-              </>
-            )}
+            <ErrorBoundary>
+              {!isInitialized || scripturesLoading ? (
+                <>
+                  <Skeleton height={120} width="80%" radius="sm" />
+                  <Skeleton height={20} width="30%" radius="sm" />
+                </>
+              ) : scriptures.length === 0 || !user ? (
+                <>
+                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                    "{SCRIPTURE_OF_THE_DAY.verse}"
+                  </Text>
+                  <Text c="dimmed" ta="center">
+                    {SCRIPTURE_OF_THE_DAY.reference}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                    "{scriptures[0].verse}"
+                  </Text>
+                  <Text c="dimmed" ta="center">
+                    {scriptures[0].reference}
+                  </Text>
+                </>
+              )}
+            </ErrorBoundary>
           </Stack>
         </Container>
       </Box>
@@ -229,37 +293,39 @@ export default function Home() {
         <Stack spacing="xl">
           <Title order={2} ta="center" mb="xl">Our Programs & Schedule</Title>
           
-          {programsLoading ? (
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
-              {[1, 2, 3].map((_, index) => (
-                <Card key={index} withBorder padding="xl" radius="md">
-                  <Skeleton height={40} circle mb="xl" />
-                  <Skeleton height={30} width="70%" mb="sm" />
-                  <Skeleton height={20} width="40%" mb="lg" />
-                  <Skeleton height={50} mb="md" />
-                </Card>
-              ))}
-            </SimpleGrid>
-          ) : (
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
-              {programs.map((program) => (
-                <Card 
-                  key={program.id} 
-                  withBorder 
-                  padding="xl"
-                  radius="md"
-                  css={cardHoverStyles}
-                >
-                  <ThemeIcon size={40} radius="md" color="indigo.6" mb="md">
-                    {getIconComponent(program.icon)}
-                  </ThemeIcon>
-                  <Title order={3} mb="xs">{program.title}</Title>
-                  <Text fw={600} c="indigo.5" mb="md">{program.time}</Text>
-                  <Text c="dimmed">{program.description}</Text>
-                </Card>
-              ))}
-            </SimpleGrid>
-          )}
+          <ErrorBoundary>
+            {!isInitialized || programsLoading ? (
+              <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+                {[1, 2, 3].map((_, index) => (
+                  <Card key={index} withBorder padding="xl" radius="md">
+                    <Skeleton height={40} circle mb="xl" />
+                    <Skeleton height={30} width="70%" mb="sm" />
+                    <Skeleton height={20} width="40%" mb="lg" />
+                    <Skeleton height={50} mb="md" />
+                  </Card>
+                ))}
+              </SimpleGrid>
+            ) : (
+              <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+                {programs.map((program) => (
+                  <Card 
+                    key={program.id} 
+                    withBorder 
+                    padding="xl"
+                    radius="md"
+                    css={cardHoverStyles}
+                  >
+                    <ThemeIcon size={40} radius="md" color="indigo.6" mb="md">
+                      {getIconComponent(program.icon)}
+                    </ThemeIcon>
+                    <Title order={3} mb="xs">{program.title}</Title>
+                    <Text fw={600} c="indigo.5" mb="md">{program.time}</Text>
+                    <Text c="dimmed">{program.description}</Text>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            )}
+          </ErrorBoundary>
         </Stack>
       </Container>
       
@@ -281,6 +347,7 @@ export default function Home() {
                   component="a" 
                   href={LOCATION.mapLink} 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   variant="light"
                   leftSection={<IconMapPin size={18} />}
                   mt="md"
@@ -290,14 +357,63 @@ export default function Home() {
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Image 
-                src={backgroundImage.src}
-                alt="Our location"
-                radius="md"
-                w="100%"
-                h={300}
-                style={{ objectFit: 'cover' }}
-              />
+              <ErrorBoundary>
+                {/* Map iframe with error handling */}
+                <Box pos="relative">
+                  <iframe
+                    src={LOCATION.mapEmbedSrc}
+                    width="100%"
+                    height="300"
+                    style={{ border: 0, borderRadius: 'var(--mantine-radius-md)' }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Maps - Warsaw Ethiopian Fellowship Location"
+                    onError={(e) => {
+                      // Handle iframe loading error (likely due to ad blocker)
+                      const target = e.target as HTMLIFrameElement;
+                      if (target) {
+                        target.style.display = 'none';
+                      }
+                      const mapErrorEl = document.getElementById('map-error');
+                      if (mapErrorEl) {
+                        mapErrorEl.style.display = 'flex';
+                      }
+                    }}
+                  />
+                  <Box 
+                    id="map-error"
+                    display="none"
+                    p="lg"
+                    ta="center"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'var(--mantine-color-dark-6)',
+                      borderRadius: 'var(--mantine-radius-md)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column'
+                    }}
+                  >
+                    <IconMapPin size={48} opacity={0.5} />
+                    <Text mt="md">Map could not be loaded. Please visit our location on Google Maps directly.</Text>
+                    <Button 
+                      component="a" 
+                      href={LOCATION.mapLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      variant="light"
+                      mt="md"
+                    >
+                      Open in Google Maps
+                    </Button>
+                  </Box>
+                </Box>
+              </ErrorBoundary>
             </Grid.Col>
           </Grid>
         </Container>
@@ -308,30 +424,32 @@ export default function Home() {
         <Stack spacing="xl">
           <Title order={2} ta="center" mb="xl">Events Gallery</Title>
           
-          {imagesLoading ? (
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-              {[1, 2, 3, 4, 5, 6].map((_, index) => (
-                <Skeleton key={index} height={200} radius="md" />
-              ))}
-            </SimpleGrid>
-          ) : images.length === 0 ? (
-            <Text c="dimmed" ta="center" py={30}>No gallery images available at the moment.</Text>
-          ) : (
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-              {images.map((image) => (
-                <Image
-                  key={image.id}
-                  src={image.imageUrl}
-                  alt={image.title}
-                  radius="md"
-                  h={200}
-                  style={{ objectFit: 'cover' }}
-                  css={cardHoverStyles}
-                  placeholder={<Skeleton height={200} radius="md" />}
-                />
-              ))}
-            </SimpleGrid>
-          )}
+          <ErrorBoundary>
+            {!isInitialized || imagesLoading ? (
+              <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+                {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                  <Skeleton key={index} height={200} radius="md" />
+                ))}
+              </SimpleGrid>
+            ) : images.length === 0 ? (
+              <Text c="dimmed" ta="center" py={30}>No gallery images available at the moment.</Text>
+            ) : (
+              <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+                {images.map((image) => (
+                  <Image
+                    key={image.id}
+                    src={image.imageUrl}
+                    alt={image.title}
+                    radius="md"
+                    h={200}
+                    style={{ objectFit: 'cover' }}
+                    css={cardHoverStyles}
+                    placeholder={<Skeleton height={200} radius="md" />}
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </ErrorBoundary>
         </Stack>
       </Container>
       
@@ -358,7 +476,7 @@ export default function Home() {
                 <Text>
                   We welcome everyone regardless of background or nationality. Our diverse community is united by our shared faith and commitment to serving one another and the wider community.
                 </Text>
-                <Button variant="outline" mt="md">Learn More About Us</Button>
+                <Button variant="outline" mt="md" onClick={() => router.push('/about')}>Learn More About Us</Button>
               </Stack>
             </Grid.Col>
           </Grid>
@@ -368,13 +486,12 @@ export default function Home() {
       {/* Contact/CTA Section */}
       <Container size="md" py={100} ta="center">
         <Stack spacing="xl" align="center">
-          <Title order={2}>Join Us This Sunday</Title>
+          <Title order={2}>Join Us This Saturday</Title>
           <Text size="lg" maw={600} ta="center">
             We'd love to welcome you to our fellowship. Join us this Sunday for worship, fellowship, and spiritual growth.
           </Text>
           <Group mt="xl">
-            <Button size="lg" radius="md">Contact Us</Button>
-            <Button size="lg" variant="light" radius="md">View All Events</Button>
+            <Button size="lg" variant="light" radius="md" onClick={() => router.push('/events')}>View All Events</Button>
           </Group>
         </Stack>
       </Container>

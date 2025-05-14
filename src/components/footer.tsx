@@ -24,6 +24,9 @@ export function Footer() {
       : 'rgba(222, 226, 230, 0.5)'
     };
     padding: 16px 0;
+    width: 100%;
+    height: 53px; /* Fixed height for the footer */
+    margin-top: auto; /* Push to the bottom if content doesn't fill page */
   `;
   
   return (

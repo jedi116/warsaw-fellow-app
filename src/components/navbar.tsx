@@ -10,7 +10,8 @@ import {
   IconLogout,
   IconBarcode,
   IconAddressBook,
-  IconDashboard
+  IconDashboard,
+  IconBooks
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { AppComponentsContext } from '@/context/AppComponentsContext';
@@ -71,6 +72,7 @@ const baseNavItems = [
   { icon: IconHome2, label: 'Home', href: '/' },
   { icon: IconDeviceDesktopAnalytics, label: 'Members', href: '/members' },
   { icon: IconAddressBook, label: 'Attendance' , href: '/attendance'},
+  { icon: IconBooks, label: 'Library', href: '/library' },
   { icon: IconUser, label: 'Account', href: '/profile' },
   { icon: IconBarcode, label: 'Codes', href: '/codes' },
   { icon: IconSettings, label: 'Settings', href: '/settings' },

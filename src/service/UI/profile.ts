@@ -19,7 +19,7 @@ export default new class Profile {
               birthday: doc.get('birthday'),
               team: doc.get('team'),
               telegram: doc.get('telegram'),
-              role: doc.get('role'),
+              role: doc.get('role') || 'member', // Default to member if role is not set
               authProvider: doc.get('authProvider')
               
             }

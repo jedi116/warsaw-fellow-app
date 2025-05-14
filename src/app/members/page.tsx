@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import MemberList from '@/components/members/memberList';
 import { User } from '@/interface/user';
 import { Modal, Button, Group, Loader, Center } from '@mantine/core';
@@ -10,6 +11,14 @@ import { MemberContext, MemberContextWrapper } from '@/context/MemberContext';
 import Delete from '@/components/members/delete';
 import UserView from '@/components/members/user';
 import CommonService from '@/service/UI/common';
+
+// Loading component imported for Suspense fallback
+// Using dynamic import with no SSR to ensure client-side only rendering
+// This helps avoid hydration issues with loading animations
+const Loading = dynamic(() => import('./loading'), { 
+  ssr: false,
+  loading: () => null // Prevents flash of loading component during dynamic import
+});
 
 const modalTitles = {
     Add: 'Add User',
@@ -25,7 +34,7 @@ const modalChild = {
     View: (<UserView />)
 };
 
-function Members() {
+function MembersContent() {
     const { closeModal, opened, modalType } = useContext(MemberContext);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -33,33 +42,49 @@ function Members() {
     useLoginRedirect();
     
     useEffect(() => {
+        // Set a flag to prevent memory leaks if component unmounts
+        let isActive = true;
+        
         const fetchUsers = async () => {
             try {
-                setLoading(true);
+                
                 const userData = await CommonService.getUsers();
+
+                
+                // Format the data
                 const formattedData = userData?.map(data => {
                     data.birthday = data.birthday.toString();
                     data.role = data.role ? data.role : '';
                     return data;
                 }) || [];
-                
-                setUsers(formattedData);
+
+                if (isActive) {
+                    setUsers(formattedData);
+                    setLoading(false);
+                }
             } catch (error) {
                 console.error("Error fetching users:", error);
-            } finally {
-                setLoading(false);
+                if (isActive) {
+                    setLoading(false);
+                }
             }
         };
         
-        fetchUsers();
+        // Force loading animation to show for at least a short period
+        // This ensures a smoother user experience when navigating
+        const loadingTimer = setTimeout(() => {
+            fetchUsers();
+        }, 500);
+        
+        // Cleanup function
+        return () => {
+            isActive = false;
+            clearTimeout(loadingTimer);
+        };
     }, []);
     
     if (loading) {
-        return (
-            <Center style={{ height: '50vh' }}>
-                <Loader size="xl" />
-            </Center>
-        );
+        return null; // Return null to keep showing the Suspense fallback
     }
     
     return (
@@ -80,6 +105,14 @@ function Members() {
             </Modal>
             <MemberList data={users} />
         </>
+    );
+}
+
+function Members() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <MembersContent />
+        </Suspense>
     );
 }
 

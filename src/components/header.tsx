@@ -32,7 +32,8 @@ import {
   IconMoon,
   IconHeart,
   IconSearch,
-  IconDashboard
+  IconDashboard,
+  IconBooks
 } from '@tabler/icons-react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, logout } from "@/service/UI/firebaseUiClient";
@@ -42,10 +43,18 @@ import { css } from '@emotion/react';
 import { usePathname } from 'next/navigation';
 import { useProfile } from '@/hooks/profile';
 
-const navLinks = [
+// Public links that all users can see
+const publicLinks = [
   { label: 'Home', href: '/', icon: IconHome },
+  { label: 'About', href: '/about', icon: IconHeart },
+  { label: 'Events', href: '/events', icon: IconCalendarEvent },
+];
+
+// Links that only authenticated users can see
+const authenticatedLinks = [
   { label: 'Members', href: '/members', icon: IconUsers },
   { label: 'Attendance', href: '/attendance', icon: IconCalendarEvent },
+  { label: 'Library', href: '/library', icon: IconBooks },
   { label: 'Codes', href: '/codes', icon: IconBarcode },
 ];
 
@@ -332,7 +341,24 @@ export function ModernHeader() {
 
             {/* Desktop navigation */}
             <Group gap={8} visibleFrom="md">
-              {navLinks.map((link) => (
+              {/* Always show public links */}
+              {publicLinks.map((link) => (
+                <UnstyledButton
+                  key={link.label}
+                  css={[navItemStyles, isCurrentPath(link.href) && activeNavItemStyles]}
+                  onClick={() => handleNavigation(link.href)}
+                >
+                  <Group gap={8} wrap="nowrap">
+                    <Box css={iconContainerStyles}>
+                      <link.icon size={16} color="#fff" stroke={1.5} />
+                    </Box>
+                    <Text>{link.label}</Text>
+                  </Group>
+                </UnstyledButton>
+              ))}
+              
+              {/* Only show authenticated links if user is logged in */}
+              {user && authenticatedLinks.map((link) => (
                 <UnstyledButton
                   key={link.label}
                   css={[navItemStyles, isCurrentPath(link.href) && activeNavItemStyles]}
@@ -524,7 +550,39 @@ export function ModernHeader() {
         <Divider my="lg" />
         
         <Stack spacing="md">
-          {navLinks.map((link) => (
+          {/* Always show public links in the mobile menu */}
+          {publicLinks.map((link) => (
+            <UnstyledButton
+              key={link.label}
+              onClick={() => handleNavigation(link.href)}
+              style={{
+                padding: '16px',
+                borderRadius: '12px',
+                backgroundColor: isCurrentPath(link.href) ? 'rgba(92, 124, 250, 0.1)' : 'transparent',
+                border: isCurrentPath(link.href) ? '1px solid rgba(92, 124, 250, 0.2)' : '1px solid transparent',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <Group>
+                <ThemeIcon 
+                  size={36} 
+                  radius="xl" 
+                  variant={isCurrentPath(link.href) ? "gradient" : "light"}
+                  gradient={{ from: 'indigo', to: 'blue', deg: 45 }}
+                  color={isCurrentPath(link.href) ? undefined : "dark.5"}
+                >
+                  <link.icon size={18} />
+                </ThemeIcon>
+                <div>
+                  <Text size="lg" fw={600}>{link.label}</Text>
+                  <Text size="xs" c="dimmed">Navigate to {link.label.toLowerCase()} page</Text>
+                </div>
+              </Group>
+            </UnstyledButton>
+          ))}
+          
+          {/* Only show authenticated links if user is logged in */}
+          {user && authenticatedLinks.map((link) => (
             <UnstyledButton
               key={link.label}
               onClick={() => handleNavigation(link.href)}

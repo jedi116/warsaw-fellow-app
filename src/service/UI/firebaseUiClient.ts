@@ -92,8 +92,29 @@ const sendPasswordReset = async (email: string) => {
   try {
     await sendPasswordResetEmail(auth, email)
     toast.success('Password reset link sent!')
+    return true
   } catch (err: any) {
-    toast.error(err.message.split('/')[1].split(')')[0])
+    // Extract and display a more user-friendly error message
+    const errorCode = err.code;
+    let errorMessage = 'Failed to send password reset email';
+    
+    switch (errorCode) {
+      case 'auth/invalid-email':
+        errorMessage = 'The email address is not valid';
+        break;
+      case 'auth/user-not-found':
+        // For security reasons, we don't reveal if an email exists or not
+        // Just show the success message even if the user doesn't exist
+        toast.success('Password reset link sent!');
+        return true;
+      default:
+        errorMessage = err.message || errorMessage;
+    }
+    
+    if (errorCode !== 'auth/user-not-found') {
+      toast.error(errorMessage);
+    }
+    return false
   }
 }
 

@@ -1,6 +1,6 @@
 
 import { Code } from '@/interface/common';
-import { User } from 'firebase/auth';
+import { User, getAuth } from 'firebase/auth';
 import { addDoc, collection, doc, where, query, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from './firebaseUiClient';
@@ -190,13 +190,54 @@ export default new class CommonService {
 
     getUsers = async (): Promise<AppUser[]> => {
         try {
-            const response = await fetch('/api/users');
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
+            // Get the current user's ID token for authentication
+            const auth = getAuth();
+            const currentUser = auth.currentUser;
+            
+            if (!currentUser) {
+                console.log('Waiting for authentication...');
+                // Wait for a moment to give Firebase auth time to initialize
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Try again
+                if (!auth.currentUser) {
+                    throw new Error('User not authenticated');
+                }
             }
+            
+            const token = await auth.currentUser!.getIdToken();
+            
+            // Use AbortController to set a timeout for the fetch
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
+            const response = await fetch('/api/users', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+            }
+            
             return await response.json();
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             console.error('Error fetching users:', error);
+            
+            // Don't show timeout errors to the user, as they may be common during page transitions
+            if (errorMessage.includes('The operation was aborted') || 
+                errorMessage.includes('AbortError')) {
+                console.log('Request was aborted - likely due to page navigation or timeout');
+            } else {
+                toast.error('Failed to load members. Please try again later.');
+            }
+            
             return [];
         }
     }

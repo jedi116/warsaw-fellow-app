@@ -5,8 +5,10 @@ export async function middleware(request: NextRequest) {
   // We'll only log requests to protected API routes for debugging purposes
   const { pathname } = request.nextUrl
   
-  // Only protect API routes at the middleware level
-  if (pathname.startsWith('/api/') && pathname !== '/api/auth') {
+  // Only protect API routes at the middleware level, except for public routes
+  if (pathname.startsWith('/api/') && 
+      pathname !== '/api/auth' && 
+      !pathname.startsWith('/api/content')) {
     // Check for either session cookie or Authorization header
     const session = request.cookies.get('session')?.value
     const authHeader = request.headers.get('Authorization')?.split(' ')[1]

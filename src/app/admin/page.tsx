@@ -13,12 +13,13 @@ import {
   Loader,
   Center
 } from '@mantine/core';
-import { IconSettings, IconPhoto, IconInfoCircle, IconBook } from '@tabler/icons-react';
+import { IconSettings, IconPhoto, IconInfoCircle, IconBook, IconCalendarEvent } from '@tabler/icons-react';
 import { useLoginRedirect } from '@/hooks/user';
 import { useProfile } from '@/hooks/profile';
 import ProgramManager from '@/components/admin/ProgramManager';
 import GalleryManager from '@/components/admin/GalleryManager';
 import ScriptureManager from '@/components/admin/ScriptureManager';
+import EventManager from '@/components/admin/EventManager';
 
 export default function AdminPage() {
   useLoginRedirect();
@@ -34,7 +35,7 @@ export default function AdminPage() {
   }, [profile]);
 
   // If not authenticated or not an admin, show access denied
-  if (!loading && (!profile || profile.role !== 'admin')) {
+  if (!loading && (!profile || !profile.role || profile.role !== 'admin')) {
     return (
       <Container size="lg" py="xl">
         <Alert 
@@ -79,6 +80,9 @@ export default function AdminPage() {
             <Tabs.Tab value="scripture" leftSection={<IconBook size={16} />}>
               Scripture of the Day
             </Tabs.Tab>
+            <Tabs.Tab value="events" leftSection={<IconCalendarEvent size={16} />}>
+              Events
+            </Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="programs">
@@ -91,6 +95,10 @@ export default function AdminPage() {
           
           <Tabs.Panel value="scripture">
             <ScriptureManager />
+          </Tabs.Panel>
+          
+          <Tabs.Panel value="events">
+            <EventManager />
           </Tabs.Panel>
         </Tabs>
       )}
