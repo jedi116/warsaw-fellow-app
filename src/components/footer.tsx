@@ -1,14 +1,14 @@
 'use client';
 
-import { Box, Container, Group, Text, ThemeIcon, Anchor, Divider } from '@mantine/core';
-import { IconHeart } from '@tabler/icons-react';
+import { Box, Container, Group, Text, Anchor, Divider } from '@mantine/core';
 import { css } from '@emotion/react';
-import { useMantineColorScheme } from '@mantine/core';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useColorScheme } from '@/components/MantineProvider';
 
 export function Footer() {
-  // Use fixed dark colorScheme for now to avoid hydration issues
-  const colorScheme = 'dark';
+  // Use color scheme from context
+  const { colorScheme } = useColorScheme();
   
   const essentialLinks = [
     { label: 'Home', href: '/' },
@@ -34,14 +34,15 @@ export function Footer() {
       <Container size="xl">
         <Group justify="space-between" align="center" wrap="wrap">
           <Group gap={8}>
-            <ThemeIcon 
-              size={24} 
-              radius="xl" 
-              variant="light" 
-              color="indigo"
-            >
-              <IconHeart size={14} style={{ strokeWidth: 1.5 }} />
-            </ThemeIcon>
+            <Box style={{ width: 24, height: 24, position: 'relative', overflow: 'hidden', borderRadius: '50%' }}>
+              <Image
+                src="/warsaw_fellow_logo2.png"
+                alt="Warsaw Ethiopian Fellowship"
+                fill
+                sizes="24px"
+                style={{ objectFit: 'cover' }}
+              />
+            </Box>
             <Text size="xs" c="dimmed">
               © {new Date().getFullYear()} Warsaw Ethiopian Fellowship
             </Text>

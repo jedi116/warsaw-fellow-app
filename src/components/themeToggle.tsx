@@ -1,29 +1,27 @@
 'use client';
 
-import { useMantineColorScheme, SegmentedControl, Group, Center, Box } from '@mantine/core';
+import { SegmentedControl, Group, Center, Box, ColorScheme } from '@mantine/core';
 import { IconSun, IconMoon } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useColorScheme } from './MantineProvider';
 
 export default function SegmentedToggle() {
-  // Remove direct reference to useMantineColorScheme() which uses useSearchParams
-  // Instead, use a fixed value for now
+  // Use the color scheme context from MantineProvider
+  const { colorScheme, toggleColorScheme } = useColorScheme();
   
-  // This hardcoded 'dark' value matches what we're using elsewhere to prevent hydration issues
-  const [mode, setMode] = useState('dark');
-  
-  // Handle the theme change without using useSearchParams
-  const handleChange = (value: 'light' | 'dark') => {
-    setMode(value);
-    // Apply the theme change directly to document attributes
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-mantine-color-scheme', value);
-    }
+  // Handle the theme change - using the context's toggleColorScheme
+  // which will handle cookie storage and DOM updates
+  const handleChange = (value: string) => {
+    toggleColorScheme(value as ColorScheme);
   };
+  
+  // We don't need this effect as we handle it in MantineProvider
+  // to avoid duplicate DOM updates
 
   return (
     <Group>
       <SegmentedControl
-        value={mode}
+        value={colorScheme}
         onChange={handleChange}
         data={[
           {

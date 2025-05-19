@@ -40,6 +40,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/service/UI/firebaseUiClient';
 import { usePublicPrograms, usePublicGalleryImages, usePublicScriptures } from '@/hooks/publicContent';
 import { IconType } from '@/interface/content';
+import { useColorScheme } from '@/components/MantineProvider';
+import NextImage from 'next/image';
 
 // Map icon strings to actual components
 const getIconComponent = (iconName: string, size = 40) => {
@@ -120,8 +122,27 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
 export default function Home() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  // Use fixed dark colorScheme for now to avoid hydration issues
-  const colorScheme = 'dark';
+  // Use color scheme from our context
+  const { colorScheme } = useColorScheme();
+  
+  // Helper function for getting theme colors
+  const getThemeColors = (section: 'scripture' | 'location' | 'about') => {
+    if (colorScheme === 'dark') {
+      return {
+        bg: 'dark.8',
+        text: 'gray.1',
+        dimmedText: 'gray.5',
+        border: 'dark.4'
+      };
+    } else {
+      return {
+        bg: 'gray.0', 
+        text: 'dark.9',
+        dimmedText: 'gray.7',
+        border: 'gray.3'
+      };
+    }
+  };
   
   // Set initial loading state to prevent premature Firebase access
   const [isInitialized, setIsInitialized] = useState(false);
@@ -235,9 +256,19 @@ export default function Home() {
       <Box css={heroSectionStyles}>
         <Container size="md">
           <Stack spacing="xl" align="center">
-            <Title order={1} size={60} fw={900} ta="center">
+            <Title order={1} size={60} fw={900} ta="center" gradient={{ from: '#4263EB', to: '#748FFC', deg: 45 }} variant="gradient">
               Warsaw Ethiopian Christian Fellowship
             </Title>
+            <Box style={{ width: 200, height: 200, position: 'relative', marginTop: -9, marginBottom: 9 }}>
+              <NextImage
+                src="/warsaw_fellow_logo2.png"
+                alt="Warsaw Fellowship Logo"
+                fill
+                sizes="220px"
+                priority
+                style={{ objectFit: 'cover', borderRadius: '50%' }}
+              />
+            </Box>
             <Text size="xl" maw={600} ta="center" my="lg">
               A welcoming community of believers gathering to worship, learn, and grow together in faith.
             </Text>
@@ -253,7 +284,7 @@ export default function Home() {
       </Box>
       
       {/* Scripture of the Day */}
-      <Box bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} py={50} ref={scriptureRef} className={scriptureEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
+      <Box bg={getThemeColors('scripture').bg} py={50} ref={scriptureRef} className={scriptureEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
         <Container size="lg">
           <Stack align="center" spacing="lg">
             <Title order={2} ta="center" c="indigo.3">Scripture of the Day</Title>
@@ -266,19 +297,19 @@ export default function Home() {
                 </>
               ) : scriptures.length === 0 || !user ? (
                 <>
-                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic" c={getThemeColors('scripture').text}>
                     "{SCRIPTURE_OF_THE_DAY.verse}"
                   </Text>
-                  <Text c="dimmed" ta="center">
+                  <Text c={getThemeColors('scripture').dimmedText} ta="center">
                     {SCRIPTURE_OF_THE_DAY.reference}
                   </Text>
                 </>
               ) : (
                 <>
-                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic">
+                  <Text fz={24} ta="center" maw={700} fw={300} fs="italic" c={getThemeColors('scripture').text}>
                     "{scriptures[0].verse}"
                   </Text>
-                  <Text c="dimmed" ta="center">
+                  <Text c={getThemeColors('scripture').dimmedText} ta="center">
                     {scriptures[0].reference}
                   </Text>
                 </>
@@ -330,7 +361,7 @@ export default function Home() {
       </Container>
       
       {/* Location Section */}
-      <Box bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} py={80} ref={locationRef} className={locationEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
+      <Box bg={getThemeColors('location').bg} py={80} ref={locationRef} className={locationEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
         <Container size="lg">
           <Grid gutter={40}>
             <Grid.Col span={{ base: 12, md: 6 }}>
@@ -339,8 +370,8 @@ export default function Home() {
                 <Group align="flex-start">
                   <IconMapPin size={24} color="var(--mantine-color-indigo-5)" />
                   <Box>
-                    <Text fw={700} size="lg">{LOCATION.address}</Text>
-                    <Text c="dimmed" mt="xs">{LOCATION.description}</Text>
+                    <Text fw={700} size="lg" c={getThemeColors('location').text}>{LOCATION.address}</Text>
+                    <Text c={getThemeColors('location').dimmedText} mt="xs">{LOCATION.description}</Text>
                   </Box>
                 </Group>
                 <Button 
@@ -454,7 +485,7 @@ export default function Home() {
       </Container>
       
       {/* About Section */}
-      <Box bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} py={80} ref={aboutRef} className={aboutEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
+      <Box bg={getThemeColors('about').bg} py={80} ref={aboutRef} className={aboutEntry?.isIntersecting ? 'visible' : ''} css={fadeInUpAnimation}>
         <Container size="lg">
           <Grid gutter={40} align="center">
             <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 2, md: 1 }}>
@@ -470,10 +501,10 @@ export default function Home() {
             <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 1, md: 2 }}>
               <Stack spacing="lg">
                 <Title order={2}>About Our Fellowship</Title>
-                <Text>
+                <Text c={getThemeColors('about').text}>
                   The Warsaw Ethiopian Christian Fellowship was established to create a spiritual home for Ethiopian Christians living in Warsaw and the surrounding areas. Our fellowship is a place where members can worship in their native language, celebrate their cultural heritage, and grow in their faith together.
                 </Text>
-                <Text>
+                <Text c={getThemeColors('about').text}>
                   We welcome everyone regardless of background or nationality. Our diverse community is united by our shared faith and commitment to serving one another and the wider community.
                 </Text>
                 <Button variant="outline" mt="md" onClick={() => router.push('/about')}>Learn More About Us</Button>

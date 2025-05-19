@@ -1055,7 +1055,7 @@
   resolved "https://registry.yarnpkg.com/@mantine/store/-/store-8.0.0.tgz#3101628eff4fa6081da44e1b1236ee717e2c31c4"
   integrity sha512-42RWCsXMNuhpX+d/hwr5aHj+HWyi5ltbc0R0xdiUnAmqSB7CHbWxDDLh4+DbmqPrN9pTeYvpPGp3v/CG2vuGBg==
 
-"@mantine/styles@^8.0.0":
+"@mantine/styles@^6.0.22":
   version "6.0.22"
   resolved "https://registry.yarnpkg.com/@mantine/styles/-/styles-6.0.22.tgz#d883823f910e9ab8a56fd80ef667b6f56f2e2bd5"
   integrity sha512-Rud/IQp2EFYDiP4csRy2XBrho/Ct+W2/b+XbvCRTeQTmpFy/NfAKm/TWJa5zPvuv/iLTjGkVos9SHw/DteESpQ==
@@ -1921,6 +1921,18 @@ convert-source-map@^1.5.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
   integrity sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==
+
+cookie@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-1.0.2.tgz#27360701532116bd3f1f9416929d176afe1e4610"
+  integrity sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==
+
+cookies-next@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/cookies-next/-/cookies-next-5.1.0.tgz#b6e1c7d11a4e1d38ed0586a7847cd0f403c539e1"
+  integrity sha512-9Ekne+q8hfziJtnT9c1yDUBqT0eDMGgPrfPl4bpR3xwQHLTd/8gbSf6+IEkP/pjGsDZt1TGbC6emYmFYRbIXwQ==
+  dependencies:
+    cookie "^1.0.1"
 
 core-util-is@~1.0.0:
   version "1.0.3"

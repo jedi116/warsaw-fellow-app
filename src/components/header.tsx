@@ -39,9 +39,11 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, logout } from "@/service/UI/firebaseUiClient";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { css } from '@emotion/react';
 import { usePathname } from 'next/navigation';
 import { useProfile } from '@/hooks/profile';
+import { useColorScheme } from '@/components/MantineProvider';
 
 // Public links that all users can see
 const publicLinks = [
@@ -119,9 +121,8 @@ export function ModernHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [user, loading, error] = useAuthState(auth);
-  // Use fixed dark colorScheme for now to avoid hydration issues
-  const colorScheme = 'dark'; 
-  const toggleColorScheme = () => {}; // No-op to avoid errors
+  // Use color scheme from context
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   const headerStyles = css`
     position: fixed;
@@ -303,14 +304,15 @@ export function ModernHeader() {
               css={logoContainerStyles}
             >
               <Group gap={12}>
-                <ThemeIcon 
-                  size={40} 
-                  radius="xl" 
-                  variant="gradient" 
-                  gradient={{ from: 'indigo', to: 'blue', deg: 45 }}
-                >
-                  <IconHeart size={22} style={{ fill: 'white', stroke: 'white', strokeWidth: 1 }} />
-                </ThemeIcon>
+                <Box style={{ width: 40, height: 40, position: 'relative', overflow: 'hidden', borderRadius: '50%' }}>
+                  <Image
+                    src="/warsaw_fellow_logo2.png"
+                    alt="Warsaw Fellowship Logo"
+                    fill
+                    sizes="40px"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </Box>
                 <div>
                   <Text 
                     fw={800} 
@@ -419,14 +421,18 @@ export function ModernHeader() {
                   <Menu.Target>
                     <Button 
                       variant="gradient" 
-                      gradient={{ from: 'dark.6', to: 'dark.5', deg: 45 }}
-                      rightSection={<IconChevronDown size={16} />}
+                      gradient={colorScheme === 'dark' 
+                        ? { from: 'dark.6', to: 'dark.5', deg: 45 }
+                        : { from: 'gray.1', to: 'gray.3', deg: 45 }
+                      }
+                      rightSection={<IconChevronDown size={16} color={colorScheme === 'dark' ? 'white' : 'black'} />}
                       radius="xl"
                       size="md"
                       style={{ 
                         fontWeight: 600,
                         letterSpacing: '0.3px',
-                        border: '1px solid rgba(92, 124, 250, 0.2)',
+                        border: `1px solid ${colorScheme === 'dark' ? 'rgba(92, 124, 250, 0.2)' : 'rgba(92, 124, 250, 0.3)'}`,
+                        color: colorScheme === 'dark' ? 'white' : 'black'
                       }}
                     >
                       <Group gap={10} wrap="nowrap">
@@ -506,13 +512,17 @@ export function ModernHeader() {
             <Group gap="md" hiddenFrom="md">
               <Button 
                 variant="gradient"
-                gradient={{ from: 'dark.6', to: 'dark.5', deg: 45 }}
+                gradient={colorScheme === 'dark' 
+                  ? { from: 'dark.6', to: 'dark.5', deg: 45 }
+                  : { from: 'gray.1', to: 'gray.3', deg: 45 }
+                }
                 onClick={toggleDrawer}
                 radius="xl"
                 size="md"
                 style={{
-                  border: '1px solid rgba(92, 124, 250, 0.2)',
+                  border: `1px solid ${colorScheme === 'dark' ? 'rgba(92, 124, 250, 0.2)' : 'rgba(92, 124, 250, 0.3)'}`,
                   fontWeight: 600,
+                  color: colorScheme === 'dark' ? 'white' : 'black'
                 }}
               >
                 <Group gap="sm">
@@ -533,14 +543,15 @@ export function ModernHeader() {
         padding="xl"
         title={
           <Group>
-            <ThemeIcon 
-              size={40} 
-              radius="xl" 
-              variant="gradient" 
-              gradient={{ from: 'indigo', to: 'blue', deg: 45 }}
-            >
-              <IconHeart size={22} style={{ fill: 'white', stroke: 'white', strokeWidth: 1 }} />
-            </ThemeIcon>
+            <Box style={{ width: 40, height: 40, position: 'relative', overflow: 'hidden', borderRadius: '50%' }}>
+              <Image
+                src="/warsaw_fellow_logo2.png"
+                alt="Warsaw Fellowship Logo"
+                fill
+                sizes="40px"
+                style={{ objectFit: 'cover' }}
+              />
+            </Box>
             <Title order={3}>Warsaw Fellowship</Title>
           </Group>
         }
